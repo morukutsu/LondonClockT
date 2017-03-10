@@ -12,10 +12,8 @@
   <MAINGROUP id="ioAPFs" name="LondonClockT">
     <GROUP id="{4FF0AF9A-660C-5CC6-FBEF-EA2A71EE94A3}" name="Source">
       <GROUP id="{891D4DE2-F72C-A99F-E60B-404F12FEEE0C}" name="GUI">
-        <FILE id="Jc1uQv" name="ClickableSquare.cpp" compile="1" resource="0"
-              file="Source/ClickableSquare.cpp"/>
-        <FILE id="Kdznu5" name="ClickableSquare.h" compile="0" resource="0"
-              file="Source/ClickableSquare.h"/>
+        <FILE id="Jc1uQv" name="Gui.cpp" compile="1" resource="0" file="Source/Gui.cpp"/>
+        <FILE id="Kdznu5" name="Gui.h" compile="0" resource="0" file="Source/Gui.h"/>
       </GROUP>
       <FILE id="Jg3vH0" name="Clocking.cpp" compile="1" resource="0" file="Source/Clocking.cpp"/>
       <FILE id="IAF0hr" name="Clocking.h" compile="0" resource="0" file="Source/Clocking.h"/>

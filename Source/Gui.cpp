@@ -1,4 +1,4 @@
-#include "ClickableSquare.h"
+#include "Gui.h"
 
 int currentId = 0;
 GuiStore store[128];
@@ -8,37 +8,6 @@ void startGui()
 {
 	currentId = 0;
 }
-
-/*bool drawClickableSquare(bool* enabled, int x, int y, Graphics& g, int mx, int my, bool mouseClicked)
-{
-	g.setColour(juce::Colour::fromRGB(64, 64, 64));
-	g.drawRect(x, y, 12, 12);
-
-	bool hover = (mx >= x && my >= y && mx <= x + 12 && my <= y + 12);
-	bool clicked = false;
-
-	if (hover)
-	{
-		g.setColour(juce::Colour::fromRGB(255, 255, 255));
-
-		clicked = mouseClicked;
-	}
-	else
-	{
-		if (*enabled)
-			g.setColour(juce::Colour::fromRGB(255, 118, 118));
-		else
-			g.setColour(juce::Colour::fromRGB(165, 165, 165));
-	}
-
-	g.fillRect(x + 1, y + 1, 12 - 2, 12 - 2);
-
-	if (clicked)
-		*enabled = !*enabled;
-
-	currentId++;
-	return clicked;
-}*/
 
 bool drawClickableSquare(bool* enabled, int x, int y, Graphics& g, int mx, int my, bool mouseDown, bool mouseClick)
 {
