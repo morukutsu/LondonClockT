@@ -96,6 +96,15 @@ void Rhythm::config(double bpm, double sampleRate)
 void Rhythm::update(unsigned int transportSamplePos, unsigned int numSamples)
 {
 	time += numSamples;
+
+	// Clear sent note offs
+	for (auto it = noteOffs.begin(); it != noteOffs.end(); )
+	{
+		if (time > (*it).timestamp)
+			noteOffs.erase(it++);
+		else
+			++it;
+	}
 }
 
 void Rhythm::tick(unsigned int currentSample, unsigned int timer, MidiBuffer& midi)
@@ -104,12 +113,19 @@ void Rhythm::tick(unsigned int currentSample, unsigned int timer, MidiBuffer& mi
 	{
 		if (stepList[nextStep])
 		{
-			midi.addEvent(MidiMessage::noteOff(1, midiNote), currentSample);
 			midi.addEvent(MidiMessage::noteOn(1, midiNote, (uint8)midiLevel), currentSample);
+			noteOffs.push_back({ midiNote, nextSampleTimestamp + loopTime / 4 });
 		}
 
 		nextSampleTimestamp = timer + loopTime;
 		nextStep = (nextStep + 1) % steps;
+	}
+
+	// Send note offs if needed
+	for (auto it = noteOffs.begin(); it != noteOffs.end(); it++)
+	{
+		if ((*it).timestamp == timer)
+			midi.addEvent(MidiMessage::noteOff(1, (*it).cc, (uint8)0), currentSample);
 	}
 }
 

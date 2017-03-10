@@ -20,8 +20,6 @@ public:
 
 	void paintRhythm(int y, Graphics& g, Rhythm& rhythm);
 
-	TextButton btn;
-
 	void buttonClicked(Button* button) override;
 	void mouseDown(const MouseEvent &event) override;
 	void mouseUp(const MouseEvent &event) override;
@@ -34,7 +32,6 @@ private:
     // This reference is provided as a quick way for your editor to
     // access the processor object that created it.
     LondonClockTAudioProcessor& processor;
-
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (LondonClockTAudioProcessorEditor)
 };

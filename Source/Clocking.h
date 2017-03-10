@@ -2,9 +2,15 @@
 #define CLOCKING_H_INCLUDED
 
 #include "../JuceLibraryCode/JuceHeader.h"
+#include <list>
 
 const int MAX_RHYTHMS = 16;
 const int MAX_STEPS = 16;
+
+struct NoteOff
+{
+	unsigned int cc, timestamp;
+};
 
 class Rhythm
 {
@@ -21,12 +27,15 @@ public:
 	bool enabled;
 	unsigned int loopTime;
 	unsigned int time;
-	unsigned int nextSampleTimestamp;
+	unsigned int nextSampleTimestamp, prevSampleTimestamp;
 	unsigned int midiNote, midiLevel;
 	unsigned int steps, divisor;
 
 	bool stepList[MAX_STEPS];
 	unsigned int nextStep;
+
+private:
+	std::list<NoteOff> noteOffs;
 };
 
 

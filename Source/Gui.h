@@ -12,8 +12,9 @@ struct GuiStore
 
 void startGui();
 bool drawClickableSquare(bool* enabled, int x, int y, Graphics& g, int mx, int my, bool mouseDown, bool mouseClick);
-bool drawKnobValue(int* value, int min, int max, int x, int y, Graphics& g, int mx, int my, bool isMouseDrag, int mouseDragDistanceY);
+bool drawKnobValue(int* value, int min, int max, int x, int y, char* text, Graphics& g, int mx, int my, bool isMouseDrag, int mouseDragDistanceY);
 
+void noteToStr(char* str, int note);
 
 
 #endif  // CLICKABLESQUARE_H_INCLUDED

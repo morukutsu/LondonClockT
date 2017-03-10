@@ -9,7 +9,7 @@ LondonClockTAudioProcessorEditor::LondonClockTAudioProcessorEditor (LondonClockT
 {
     // Make sure that before the constructor has finished, you've set the
     // editor's size to whatever you need it to be.
-    setSize(400, 300);
+    setSize(500, 300);
 	startTimerHz(60);
 
 	/*addAndMakeVisible(btn);
@@ -36,16 +36,6 @@ void LondonClockTAudioProcessorEditor::paint (Graphics& g)
 	juce::Point<int> mousePos = getMouseXYRelative();
     g.fillAll (juce::Colour::fromRGB(69, 69, 69) );
 
-    /*g.setColour (Colours::white);
-    g.setFont (15.0f);*/
-
-
-	/*char buf[256];
-	sprintf(buf, "x: %d, y: %d", mousePos.x, mousePos.y);
-	
-	if (isMouseButtonDown() )
-		g.drawFittedText (buf, getLocalBounds(), Justification::centred, 1);*/
-
 	int currentY = 0;
 
 	// Draw all the rhythms controllers
@@ -56,7 +46,7 @@ void LondonClockTAudioProcessorEditor::paint (Graphics& g)
 	currentY += (processor.mClocking.mRhythmsCount + 1) * rhythmHeight;
 
 	// Additional controls at the bottom
-	if (drawKnobValue(&processor.mClocking.mRhythmsCount, 1, 16, 10, currentY, g, mousePos.x, mousePos.y, isMouseDrag, mouseDragDistanceY))
+	if (drawKnobValue(&processor.mClocking.mRhythmsCount, 1, 16, 10, currentY, NULL, g, mousePos.x, mousePos.y, isMouseDrag, mouseDragDistanceY))
 	{
 		processor.mClocking.mRhythms[processor.mClocking.mRhythmsCount - 1].enabled = true;
 	}
@@ -74,10 +64,10 @@ void LondonClockTAudioProcessorEditor::paintRhythm(int yPos, Graphics& g, Rhythm
 	float height = 16;
 
 	// Buttons
-	drawKnobValue((int*)&rhythm.steps, 1, 16, x, y, g, mousePos.x, mousePos.y, isMouseDrag, mouseDragDistanceY);
+	drawKnobValue((int*)&rhythm.steps, 1, 16, x, y, NULL, g, mousePos.x, mousePos.y, isMouseDrag, mouseDragDistanceY);
 	x += 34;
 
-	drawKnobValue((int*)&rhythm.divisor, 1, 16, x, y, g, mousePos.x, mousePos.y, isMouseDrag, mouseDragDistanceY);
+	drawKnobValue((int*)&rhythm.divisor, 1, 16, x, y, NULL, g, mousePos.x, mousePos.y, isMouseDrag, mouseDragDistanceY);
 
 	// Background and progess bar
 	float xBar = 38;
@@ -99,17 +89,15 @@ void LondonClockTAudioProcessorEditor::paintRhythm(int yPos, Graphics& g, Rhythm
 		drawClickableSquare(&rhythm.stepList[i], 2 + x + stepX, 2 + y, g, mousePos.x, mousePos.y, isMouseButtonDown(), isMouseClicked);
 	}
 
-	//btn.setButtonText("test");
-	/*btn.setBounds(0, 0, 60, 20);
-	btn.paintButton(g, btn.isMouseOver(), btn.isMouseButtonDown() );*/
+	x += 300;
 
+	// Other tmp controls
+	drawKnobValue((int*)&rhythm.midiNote, 0, 127, x, y, NULL, g, mousePos.x, mousePos.y, isMouseDrag, mouseDragDistanceY);
 }
 
 
 void LondonClockTAudioProcessorEditor::resized()
 {
-    // This is generally where you'll want to lay out the positions of any
-    // subcomponents in your editor..
 }
 
 void LondonClockTAudioProcessorEditor::timerCallback()
