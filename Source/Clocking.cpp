@@ -161,6 +161,9 @@ void Rhythm::serialize(MemoryOutputStream& stream)
 	stream.writeInt(midiLevel);
 	stream.writeInt(steps);
 	stream.writeInt(divisor);
+
+	for (int i = 0; i < MAX_STEPS; i++)
+		stream.writeBool(stepList[i]);
 }
 
 void Rhythm::unserialize(MemoryInputStream& stream)
@@ -170,4 +173,7 @@ void Rhythm::unserialize(MemoryInputStream& stream)
 	midiLevel = stream.readInt();
 	steps     = stream.readInt();
 	divisor   = stream.readInt();
+
+	for (int i = 0; i < MAX_STEPS; i++)
+		stepList[i] = stream.readBool();
 }
