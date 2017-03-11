@@ -57,6 +57,20 @@ void Clocking::reset()
 		mRhythms[i].reset();
 }
 
+void Clocking::serialize(MemoryOutputStream& stream)
+{
+	stream.writeInt(mRhythmsCount);
+	for (int i = 0; i < mRhythmsCount; i++)
+		mRhythms[i].serialize(stream);
+}
+
+void Clocking::unserialize(MemoryInputStream& stream)
+{
+	mRhythmsCount = stream.readInt();
+	for (int i = 0; i < mRhythmsCount; i++)
+		mRhythms[i].unserialize(stream);
+}
+
 /*
 	Rhythm class
 */
@@ -140,4 +154,20 @@ void Rhythm::sync()
 	nextSampleTimestamp = sequenceStartTimestamp + nextStep * loopTime;
 }
 
+void Rhythm::serialize(MemoryOutputStream& stream)
+{
+	stream.writeBool(enabled);
+	stream.writeInt(midiNote);
+	stream.writeInt(midiLevel);
+	stream.writeInt(steps);
+	stream.writeInt(divisor);
+}
 
+void Rhythm::unserialize(MemoryInputStream& stream)
+{
+	enabled   = stream.readBool();
+	midiNote  = stream.readInt();
+	midiLevel = stream.readInt();
+	steps     = stream.readInt();
+	divisor   = stream.readInt();
+}

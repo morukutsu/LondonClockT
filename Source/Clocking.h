@@ -23,6 +23,9 @@ public:
 	void tick(unsigned int currentSample, unsigned int timer, MidiBuffer& midi);
 	void sync();
 
+	void serialize(MemoryOutputStream& stream);
+	void unserialize(MemoryInputStream& stream);
+
 public:
 	bool enabled;
 	unsigned int loopTime;
@@ -47,6 +50,9 @@ public:
 	void reset();
 	void update(unsigned int transportSamplePos, unsigned int numSamples, MidiBuffer& midi);
 	void config(double bpm, double sampleRate);
+
+	void serialize(MemoryOutputStream& stream);
+	void unserialize(MemoryInputStream& stream);
 
 public:
 	unsigned int mTime;

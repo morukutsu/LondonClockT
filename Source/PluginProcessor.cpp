@@ -173,15 +173,14 @@ AudioProcessorEditor* LondonClockTAudioProcessor::createEditor()
 //==============================================================================
 void LondonClockTAudioProcessor::getStateInformation (MemoryBlock& destData)
 {
-    // You should use this method to store your parameters in the memory block.
-    // You could do that either as raw data, or use the XML or ValueTree classes
-    // as intermediaries to make it easy to save and load complex data.
+	MemoryOutputStream stream(destData, true);
+	mClocking.serialize(stream);
 }
 
 void LondonClockTAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
 {
-    // You should use this method to restore your parameters from this memory block,
-    // whose contents will have been created by the getStateInformation() call.
+	MemoryInputStream stream(data, (size_t)sizeInBytes, false);
+	mClocking.unserialize(stream);
 }
 
 //==============================================================================
