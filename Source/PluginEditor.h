@@ -18,7 +18,7 @@ public:
     void resized() override;
 	void timerCallback() override;
 
-	void paintRhythm(int y, Graphics& g, Rhythm& rhythm);
+	void paintRhythm(int y, Graphics& g, Rhythm& rhythm, int index);
 
 	void buttonClicked(Button* button) override;
 	void mouseDown(const MouseEvent &event) override;

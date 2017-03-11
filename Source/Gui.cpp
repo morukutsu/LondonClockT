@@ -113,6 +113,49 @@ bool drawKnobValue(int* value, int min, int max, int x, int y, char* text, Graph
 	return changed;
 }
 
+bool drawButton(bool* enabled, char* text, int x, int y, Graphics& g, int mx, int my, bool mouseDown, bool mouseClick)
+{
+	int width = 36;
+
+	bool hover = (mx >= x && my >= y && mx <= x + width && my <= y + 18);
+	bool clicked = false;
+
+	if (hover)
+	{
+		if (*enabled)
+			g.setColour(juce::Colour::fromRGB(255, 102 + 40, 102 + 40));
+		else
+			g.setColour(juce::Colour::fromRGB(165 + 40, 165 + 40, 165 + 40));
+
+		clicked = mouseClick;
+	}
+	else
+	{
+		if (*enabled)
+			g.setColour(juce::Colour::fromRGB(255, 102, 102));
+		else
+			g.setColour(juce::Colour::fromRGB(165, 165, 165));
+	}
+
+	if (mouseDown && hover && !store[currentId].wasHover)
+		clicked = true;
+
+	if (clicked)
+		*enabled = !*enabled;
+
+	store[currentId].wasHover = hover;
+
+	// Draw code
+	g.fillRect(x, y, width, 16);
+
+	g.setColour(juce::Colour::fromRGB(69, 69, 69));
+
+	g.drawText(text, x, y, width, 16, juce::Justification::centred);
+
+	currentId++;
+	return clicked;
+}
+
 void noteToStr(char* str, int note)
 {
 	char* notes[12] = { "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B" };

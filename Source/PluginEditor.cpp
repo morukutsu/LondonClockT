@@ -41,7 +41,7 @@ void LondonClockTAudioProcessorEditor::paint (Graphics& g)
 	// Draw all the rhythms controllers
 	const int rhythmHeight = 22;
 	for (int i = 0; i < processor.mClocking.mRhythmsCount; i++)
-		paintRhythm(i * rhythmHeight, g, processor.mClocking.mRhythms[i]);
+		paintRhythm(i * rhythmHeight, g, processor.mClocking.mRhythms[i], i);
 
 	currentY += (processor.mClocking.mRhythmsCount + 1) * rhythmHeight;
 
@@ -54,7 +54,7 @@ void LondonClockTAudioProcessorEditor::paint (Graphics& g)
 	isMouseClicked = false;
 }
 
-void LondonClockTAudioProcessorEditor::paintRhythm(int yPos, Graphics& g, Rhythm& rhythm)
+void LondonClockTAudioProcessorEditor::paintRhythm(int yPos, Graphics& g, Rhythm& rhythm, int rhythmIndex)
 {
 	juce::Point<int> mousePos = getMouseXYRelative();
 
@@ -62,8 +62,14 @@ void LondonClockTAudioProcessorEditor::paintRhythm(int yPos, Graphics& g, Rhythm
 	float y = yPos + 20;
 	float width = 300;
 	float height = 16;
+	char buf[32];
 
-	// Buttons
+	// Channel status
+	sprintf(buf, "%d %s", (rhythmIndex + 1), rhythm.enabled ? "ON" : "OFF");
+	drawButton(&rhythm.enabled, buf, x, y, g, mousePos.x, mousePos.y, isMouseButtonDown(), isMouseClicked);
+	x += 38;
+
+	// Staps & divisor
 	drawKnobValue((int*)&rhythm.steps, 1, 16, x, y, NULL, g, mousePos.x, mousePos.y, isMouseDrag, mouseDragDistanceY);
 	x += 34;
 
@@ -92,7 +98,6 @@ void LondonClockTAudioProcessorEditor::paintRhythm(int yPos, Graphics& g, Rhythm
 	x += 300;
 
 	// Other tmp controls
-	char buf[32];
 	noteToStr(buf, rhythm.midiNote);
 	drawKnobValue((int*)&rhythm.midiNote, 0, 127, x, y, buf, g, mousePos.x, mousePos.y, isMouseDrag, mouseDragDistanceY);
 }
