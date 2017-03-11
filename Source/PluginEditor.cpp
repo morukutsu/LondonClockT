@@ -92,7 +92,9 @@ void LondonClockTAudioProcessorEditor::paintRhythm(int yPos, Graphics& g, Rhythm
 	x += 300;
 
 	// Other tmp controls
-	drawKnobValue((int*)&rhythm.midiNote, 0, 127, x, y, NULL, g, mousePos.x, mousePos.y, isMouseDrag, mouseDragDistanceY);
+	char buf[32];
+	noteToStr(buf, rhythm.midiNote);
+	drawKnobValue((int*)&rhythm.midiNote, 0, 127, x, y, buf, g, mousePos.x, mousePos.y, isMouseDrag, mouseDragDistanceY);
 }
 
 

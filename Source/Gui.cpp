@@ -65,7 +65,7 @@ bool drawKnobValue(int* value, int min, int max, int x, int y, char* text, Graph
 	{
 		if (isMouseDrag)
 		{
-			const int scale = max - min;
+			const int scale = std::min(max - min, 16);
 			const int mouseMaxDisplacement = 200;
 			const int unit = mouseMaxDisplacement / scale;
 
@@ -121,6 +121,6 @@ void noteToStr(char* str, int note)
 		int octave    = note / 12;
 		int noteIndex = note % 12;
 
-		sprintf(str, "%s %d", notes[noteIndex], octave);
+		sprintf(str, "%s%d", notes[noteIndex], octave - 2);
 	}
 }
