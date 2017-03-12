@@ -92,7 +92,10 @@ bool drawKnobValue(int* value, int min, int max, int x, int y, char* text, Graph
 		currentDragId = -1;
 	}
 	
-	g.setColour(juce::Colour::fromRGB(255, 102, 102));
+	if (hover || currentDragId == currentId)
+		g.setColour(juce::Colour::fromRGB(255, 102 + 40, 102 + 40));
+	else
+		g.setColour(juce::Colour::fromRGB(255, 102, 102));
 
 	g.fillRect(x, y, 32, 16);
 

@@ -87,7 +87,11 @@ Rhythm::Rhythm()
 	nextStep = 0;
 
 	for (int i = 0; i < MAX_STEPS; i++)
-		stepList[i] = true;
+	{
+		stepList[i].enabled = true;
+		stepList[i].cc = 60;
+		stepList[i].level = 127;
+	}
 }
 
 void Rhythm::reset()
@@ -123,12 +127,14 @@ void Rhythm::update(unsigned int transportSamplePos, unsigned int numSamples)
 
 void Rhythm::tick(unsigned int currentSample, unsigned int timer, MidiBuffer& midi)
 {
+	int stepId = nextStep % steps;
+
 	if (nextSampleTimestamp == timer)
 	{
-		if (stepList[nextStep])
+		if (stepList[stepId].enabled)
 		{
-			midi.addEvent(MidiMessage::noteOn(1, midiNote, (uint8)midiLevel), currentSample);
-			noteOffs.push_back({ midiNote, nextSampleTimestamp + loopTime / 4 });
+			midi.addEvent(MidiMessage::noteOn(1, stepList[stepId].cc, (uint8)stepList[stepId].level), currentSample);
+			noteOffs.push_back({ (unsigned int)stepList[stepId].cc, nextSampleTimestamp + loopTime / 4 });
 		}
 
 		nextSampleTimestamp = timer + loopTime;
@@ -163,7 +169,12 @@ void Rhythm::serialize(MemoryOutputStream& stream)
 	stream.writeInt(divisor);
 
 	for (int i = 0; i < MAX_STEPS; i++)
-		stream.writeBool(stepList[i]);
+	{
+		stream.writeBool(stepList[i].enabled);
+		stream.writeInt(stepList[i].cc);
+		stream.writeInt(stepList[i].level);
+		stream.writeInt(stepList[i].duration);
+	}
 }
 
 void Rhythm::unserialize(MemoryInputStream& stream)
@@ -175,5 +186,10 @@ void Rhythm::unserialize(MemoryInputStream& stream)
 	divisor   = stream.readInt();
 
 	for (int i = 0; i < MAX_STEPS; i++)
-		stepList[i] = stream.readBool();
+	{
+		stepList[i].enabled = stream.readBool();
+		stepList[i].cc = stream.readInt();
+		stepList[i].level = stream.readInt();
+		stepList[i].duration = stream.readInt();
+	}
 }

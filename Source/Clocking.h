@@ -12,6 +12,12 @@ struct NoteOff
 	unsigned int cc, timestamp;
 };
 
+struct Step
+{
+	bool enabled;
+	int cc, level, duration;
+};
+
 class Rhythm
 {
 public:
@@ -34,7 +40,7 @@ public:
 	unsigned int midiNote, midiLevel;
 	unsigned int steps, divisor;
 
-	bool stepList[MAX_STEPS];
+	Step stepList[MAX_STEPS];
 	unsigned int nextStep;
 
 private:

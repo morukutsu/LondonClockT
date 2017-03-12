@@ -18,6 +18,7 @@ LondonClockTAudioProcessorEditor::LondonClockTAudioProcessorEditor (LondonClockT
 	btn.setOpaque(true);*/
 
 	isMouseDown = isMouseClicked = isMouseDrag = false;
+	editChannelId = -1;
 }
 
 LondonClockTAudioProcessorEditor::~LondonClockTAudioProcessorEditor()
@@ -41,14 +42,37 @@ void LondonClockTAudioProcessorEditor::paint (Graphics& g)
 	// Draw all the rhythms controllers
 	const int rhythmHeight = 22;
 	for (int i = 0; i < processor.mClocking.mRhythmsCount; i++)
-		paintRhythm(i * rhythmHeight, g, processor.mClocking.mRhythms[i], i);
+	{
+		if (editChannelId == -1)
+			paintRhythm(i * rhythmHeight, g, processor.mClocking.mRhythms[i], i);
+
+		// Edit
+		bool isEdit = editChannelId == i;
+		if (drawButton(&isEdit, "EDIT", 438, i * rhythmHeight + 20, g, mousePos.x, mousePos.y, isMouseButtonDown(), isMouseClicked))
+		{
+			if (editChannelId == i)
+				editChannelId = -1; // Disable edit mode when pressing edit mode if on
+			else
+				editChannelId = i;
+		}
+	}
+
+	// Edit mode
+	if (editChannelId != -1)
+	{
+		paintRhythm(0, g, processor.mClocking.mRhythms[editChannelId], editChannelId);
+		paintEditMode(40, g, processor.mClocking.mRhythms[editChannelId], editChannelId);
+	}
 
 	currentY += (processor.mClocking.mRhythmsCount + 1) * rhythmHeight;
 
-	// Additional controls at the bottom
-	if (drawKnobValue(&processor.mClocking.mRhythmsCount, 1, 16, 10, currentY, NULL, g, mousePos.x, mousePos.y, isMouseDrag, mouseDragDistanceY))
+	if (editChannelId == -1)
 	{
-		processor.mClocking.mRhythms[processor.mClocking.mRhythmsCount - 1].enabled = true;
+		// Additional controls at the bottom
+		if (drawKnobValue(&processor.mClocking.mRhythmsCount, 1, 16, 10, currentY, NULL, g, mousePos.x, mousePos.y, isMouseDrag, mouseDragDistanceY))
+		{
+			processor.mClocking.mRhythms[processor.mClocking.mRhythmsCount - 1].enabled = true;
+		}
 	}
 
 	isMouseClicked = false;
@@ -92,16 +116,76 @@ void LondonClockTAudioProcessorEditor::paintRhythm(int yPos, Graphics& g, Rhythm
 	for (unsigned int i = 0; i < rhythm.steps; i++)
 	{
 		float stepX = i * (width / rhythm.steps);
-		drawClickableSquare(&rhythm.stepList[i], 2 + x + stepX, 2 + y, g, mousePos.x, mousePos.y, isMouseButtonDown(), isMouseClicked);
+		drawClickableSquare(&rhythm.stepList[i].enabled, 2 + x + stepX, 2 + y, g, mousePos.x, mousePos.y, isMouseButtonDown(), isMouseClicked);
 	}
 
 	x += 300;
 
 	// Other tmp controls
-	noteToStr(buf, rhythm.midiNote);
+	/*noteToStr(buf, rhythm.midiNote);
 	drawKnobValue((int*)&rhythm.midiNote, 0, 127, x, y, buf, g, mousePos.x, mousePos.y, isMouseDrag, mouseDragDistanceY);
+
+	x += 38;*/
+
+	
+
+	x += 38;
 }
 
+void LondonClockTAudioProcessorEditor::paintEditMode(int yPos, Graphics& g, Rhythm& rhythm, int index)
+{
+	juce::Point<int> m = getMouseXYRelative();
+
+	float x = 119;
+	float y = yPos;
+	float width = 301;
+	float height = 150;
+
+	// BG
+	g.setColour(juce::Colour::fromRGB(165, 165, 165));
+	g.fillRect(x, y, width, height);
+
+	// VEL EDITOR
+	for (unsigned int i = 0; i < rhythm.steps; i++)
+	{
+		float stepX = i * (width / rhythm.steps);
+		float level = (height / 128) * rhythm.stepList[i].level;
+
+		float squareX = stepX + x;
+		float squareY = y + (height - level);
+		float squareW = width / rhythm.steps;
+		float squareH = level;
+
+		bool hover = (m.x >= squareX && m.y >= y && m.x <= squareX + squareW && m.y <= squareY + height);
+		if (!hover)
+			g.setColour(juce::Colour::fromRGB(255, 118, 118));
+		else
+			g.setColour(juce::Colour::fromRGB(255, 118 + 40, 118 + 40));
+
+		// Modification of vel by mouse
+		if (hover && isMouseButtonDown())
+		{
+			int l = (m.y - y) * (128 / height);
+			if (l < 0)
+				l = 0;
+			if (l > 127)
+				l = 127;
+
+			l = 127 - l;
+			rhythm.stepList[i].level = l;
+		}
+
+		g.fillRect(squareX, squareY, squareW, squareH);
+	}
+
+	// Lines
+	g.setColour(juce::Colour::fromRGB(64, 64, 64));
+	for (unsigned int i = 0; i < rhythm.steps; i++)
+	{
+		float stepX = i * (width / rhythm.steps);
+		g.drawVerticalLine((int)stepX + x, yPos, yPos + height);
+	}
+}
 
 void LondonClockTAudioProcessorEditor::resized()
 {

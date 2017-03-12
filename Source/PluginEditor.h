@@ -19,6 +19,7 @@ public:
 	void timerCallback() override;
 
 	void paintRhythm(int y, Graphics& g, Rhythm& rhythm, int index);
+	void paintEditMode(int y, Graphics& g, Rhythm& rhythm, int index);
 
 	void buttonClicked(Button* button) override;
 	void mouseDown(const MouseEvent &event) override;
@@ -27,6 +28,7 @@ public:
 
 	bool isMouseDown, isMouseClicked, isMouseDrag;
 	int mouseDragDistanceY;
+	int editChannelId;
 
 private:
     // This reference is provided as a quick way for your editor to
