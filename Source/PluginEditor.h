@@ -18,6 +18,7 @@ public:
     void resized() override;
 	void timerCallback() override;
 
+	void paintChannelStatus(int y, Graphics& g, Rhythm& rhythm, int index);
 	void paintRhythm(int y, Graphics& g, Rhythm& rhythm, int index);
 	void paintEditMode(int y, Graphics& g, Rhythm& rhythm, int index);
 
@@ -28,7 +29,7 @@ public:
 
 	bool isMouseDown, isMouseClicked, isMouseDrag;
 	int mouseDragDistanceY;
-	int editChannelId;
+	int editChannelId, editMode, baseCC;
 
 private:
     // This reference is provided as a quick way for your editor to
