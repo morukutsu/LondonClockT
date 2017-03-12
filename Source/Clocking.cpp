@@ -26,16 +26,17 @@ void Clocking::update(unsigned int transportSamplePos, unsigned int numSamples, 
 {
 	for (int i = 0; i < mRhythmsCount; i++)
 	{
-		if (!mRhythms[i].enabled)
-			continue;
-
 		mRhythms[i].config(mBpm, mSampleRate);
 
-		for (unsigned int k = 0; k < numSamples; k++)
+		if (mRhythms[i].enabled)
 		{
-			unsigned int timer = k + mTime;
-			mRhythms[i].tick(k, timer, midi);
+			for (unsigned int k = 0; k < numSamples; k++)
+			{
+				unsigned int timer = k + mTime;
+				mRhythms[i].tick(k, timer, midi);
+			}
 		}
+		
 
 		mRhythms[i].update(transportSamplePos, numSamples);
 	}
@@ -99,6 +100,7 @@ void Rhythm::reset()
 	time = 0;
 	nextSampleTimestamp = 0;
 	nextStep = 0;
+	noteOffs.clear();
 }
 
 void Rhythm::config(double bpm, double sampleRate)
