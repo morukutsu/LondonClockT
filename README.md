@@ -1,8 +1,12 @@
 # London ClockT VST
 Polyrhythm generator WIP
 
+Polyrhythmus-like VST. No Max for Live dependency. FLStudio & Bitwig friendly.
+
+VST version: https://github.com/morukutsu/LondonClockT/blob/master/bin/LondonClockT.dll
+Mac: coming
+
 ![screenshot](https://github.com/morukutsu/LondonClockT/raw/master/doc/lct1.png)
 ![polyrhythm](https://github.com/morukutsu/LondonClockT/raw/master/doc/lct2.png)
 
-Implementation of a Polyrhythmus-like polyrhythm generator as a VST to work without Max for Live.
-Very WIP, builds coming when more features are available.
+Do not hesitate to ping me for issues or feature requests
