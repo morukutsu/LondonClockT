@@ -3,6 +3,7 @@
 int currentId = 0;
 GuiStore store[128];
 int currentDragId = -1;
+std::string currentDragUUID = "";
 
 void startGui()
 {
@@ -14,10 +15,11 @@ bool drawClickableSquare(bool* enabled, int x, int y, Graphics& g, int mx, int m
 	g.setColour(juce::Colour::fromRGB(64, 64, 64));
 	g.drawRect(x, y, 12, 12);
 
+	bool disableInteractions = currentDragId != -1;
 	bool hover = (mx >= x && my >= y && mx <= x + 12 && my <= y + 12);
 	bool clicked = false;
 
-	if (hover)
+	if (hover && !disableInteractions)
 	{
 		if (*enabled)
 			g.setColour(juce::Colour::fromRGB(255, 118 + 40, 118 + 40));
@@ -36,7 +38,7 @@ bool drawClickableSquare(bool* enabled, int x, int y, Graphics& g, int mx, int m
 
 	g.fillRect(x + 1, y + 1, 12 - 2, 12 - 2);
 
-	if (mouseDown && hover && !store[currentId].wasHover)
+	if (mouseDown && hover && !store[currentId].wasHover && !disableInteractions)
 		clicked = true;
 
 	if (clicked)
@@ -48,15 +50,30 @@ bool drawClickableSquare(bool* enabled, int x, int y, Graphics& g, int mx, int m
 	return clicked;
 }
 
-bool drawKnobValue(int* value, int min, int max, int x, int y, char* text, Graphics& g, int mx, int my, bool isMouseDrag, int mouseDragDistanceY)
+bool drawKnobValue(int* value, int min, int max, int x, int y, int w, int h, char* text, Graphics& g, int mx, int my, bool isMouseDrag, int mouseDragDistanceY, std::string key)
 {
-	bool hover = (mx >= x && my >= y && mx <= x + 32 && my <= y + 18);
+	bool hover = (mx >= x && my >= y && mx <= x + w && my <= y + h);
+
+	// Restore currentDragId using UUID
+	if (currentDragUUID != "" && key != "" && isMouseDrag)
+	{
+		if (key == currentDragUUID)
+		{
+			if (currentDragId != -1)
+				store[currentDragId].isDrag = false;
+			store[currentId].isDrag = true;
+			currentDragId = currentId;
+		}
+	}
 
 	if (hover && isMouseDrag && !store[currentId].isDrag && currentDragId == -1)
 	{
 		store[currentId].isDrag = true;
 		store[currentId].dragStartValue = *value;
 		currentDragId = currentId;
+
+		if (key != "")
+			currentDragUUID = key;
 	}
 	
 	bool changed = false;
@@ -83,6 +100,9 @@ bool drawKnobValue(int* value, int min, int max, int x, int y, char* text, Graph
 		else
 		{
 			currentDragId = -1;
+
+			if (key != "")
+				currentDragUUID = "";
 		}
 	}
 
@@ -90,6 +110,9 @@ bool drawKnobValue(int* value, int min, int max, int x, int y, char* text, Graph
 	{
 		store[currentId].isDrag = false;
 		currentDragId = -1;
+
+		if (key != "")
+			currentDragUUID = "";
 	}
 	
 	if (hover || currentDragId == currentId)
@@ -97,7 +120,7 @@ bool drawKnobValue(int* value, int min, int max, int x, int y, char* text, Graph
 	else
 		g.setColour(juce::Colour::fromRGB(255, 102, 102));
 
-	g.fillRect(x, y, 32, 16);
+	g.fillRect(x, y, w, h);
 
 	g.setColour(juce::Colour::fromRGB(69, 69, 69));
 
@@ -105,25 +128,24 @@ bool drawKnobValue(int* value, int min, int max, int x, int y, char* text, Graph
 	if (text == NULL)
 	{
 		sprintf(str, "%d", *value);
-		g.drawText(str, x, y, 32, 16, juce::Justification::centred);
+		g.drawText(str, x, y, w, h, juce::Justification::centred);
 	}
 	else
 	{
-		g.drawText(text, x, y, 32, 16, juce::Justification::centred);
+		g.drawText(text, x, y, w, h, juce::Justification::centred);
 	}
 
 	currentId++;
 	return changed;
 }
 
-bool drawButton(bool* enabled, char* text, int x, int y, Graphics& g, int mx, int my, bool mouseDown, bool mouseClick)
+bool drawButton(bool* enabled, char* text, int x, int y, int w, int h, Graphics& g, int mx, int my, bool mouseDown, bool mouseClick)
 {
-	int width = 36;
-
-	bool hover = (mx >= x && my >= y && mx <= x + width && my <= y + 18);
+	bool disableInteractions = currentDragId != -1;
+	bool hover = (mx >= x && my >= y && mx <= x + w && my <= y + h);
 	bool clicked = false;
 
-	if (hover)
+	if (hover && !disableInteractions)
 	{
 		if (*enabled)
 			g.setColour(juce::Colour::fromRGB(255, 102 + 40, 102 + 40));
@@ -140,7 +162,7 @@ bool drawButton(bool* enabled, char* text, int x, int y, Graphics& g, int mx, in
 			g.setColour(juce::Colour::fromRGB(165, 165, 165));
 	}
 
-	if (mouseDown && hover && !store[currentId].wasHover)
+	if (mouseDown && hover && !store[currentId].wasHover && !disableInteractions)
 		clicked = true;
 
 	if (clicked)
@@ -149,11 +171,11 @@ bool drawButton(bool* enabled, char* text, int x, int y, Graphics& g, int mx, in
 	store[currentId].wasHover = hover;
 
 	// Draw code
-	g.fillRect(x, y, width, 16);
+	g.fillRect(x, y, w, h);
 
 	g.setColour(juce::Colour::fromRGB(69, 69, 69));
 
-	g.drawText(text, x, y, width, 16, juce::Justification::centred);
+	g.drawText(text, x, y, w, h, juce::Justification::centred);
 
 	currentId++;
 	return clicked;

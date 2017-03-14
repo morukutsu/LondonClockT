@@ -18,9 +18,9 @@ public:
     void resized() override;
 	void timerCallback() override;
 
-	void paintChannelStatus(int y, Graphics& g, Rhythm& rhythm, int index);
-	void paintRhythm(int y, Graphics& g, Rhythm& rhythm, int index);
-	void paintEditMode(int y, Graphics& g, Rhythm& rhythm, int index);
+	int  paintChannelStatus(int x, int y, Graphics& g, Rhythm& rhythm, int index);
+	void paintRhythm(int x, int y, Graphics& g, Rhythm& rhythm, int index);
+	void paintEditMode(int x, int y, Graphics& g, Rhythm& rhythm, int index);
 
 	void buttonClicked(Button* button) override;
 	void mouseDown(const MouseEvent &event) override;
