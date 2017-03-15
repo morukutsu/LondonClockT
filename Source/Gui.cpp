@@ -10,6 +10,11 @@ void startGui()
 	currentId = 0;
 }
 
+bool getInteractionsDisabled()
+{
+	return currentDragId != -1;
+}
+
 bool drawClickableSquare(bool* enabled, int x, int y, Graphics& g, int mx, int my, bool mouseDown, bool mouseClick)
 {
 	g.setColour(juce::Colour::fromRGB(64, 64, 64));

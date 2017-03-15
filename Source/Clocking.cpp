@@ -24,8 +24,11 @@ Clocking::Clocking()
 
 void Clocking::update(unsigned int transportSamplePos, unsigned int numSamples, MidiBuffer& midi)
 {
-	for (int i = 0; i < mRhythmsCount; i++)
+	for (int i = 0; i < MAX_RHYTHMS; i++)
 	{
+		if (i >= mRhythmsCount)
+			mRhythms[i].enabled = false;
+
 		mRhythms[i].config(mBpm, mSampleRate);
 
 		if (mRhythms[i].enabled)

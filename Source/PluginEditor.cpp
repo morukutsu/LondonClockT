@@ -182,14 +182,14 @@ void LondonClockTAudioProcessorEditor::paintEditMode(int x, int yPos, Graphics& 
 			float squareW = width / rhythm.steps;
 			float squareH = level;
 
-			bool hover = (m.x >= squareX && m.y >= y && m.x <= squareX + squareW && m.y <= squareY + height);
+			bool hover = (m.x >= squareX && m.y >= y && m.x <= squareX + squareW && m.y <= squareY + height) && !getInteractionsDisabled();
 			if (!hover)
 				g.setColour(juce::Colour::fromRGB(255, 118, 118));
 			else
 				g.setColour(juce::Colour::fromRGB(255, 118 + 40, 118 + 40));
 
 			// Modification of vel by mouse
-			if (hover && isMouseButtonDown())
+			if (hover && isMouseButtonDown() && !getInteractionsDisabled() )
 			{
 				int l = (m.y - y) * (128 / height);
 				if (l < 0)
@@ -220,9 +220,9 @@ void LondonClockTAudioProcessorEditor::paintEditMode(int x, int yPos, Graphics& 
 			float squareW = width / rhythm.steps;
 			float squareH = noteHeight;
 
-			bool hover = (m.x >= squareX && m.y >= y && m.x <= squareX + squareW && m.y <= y + height);
+			bool hover = (m.x >= squareX && m.y >= y && m.x <= squareX + squareW && m.y <= y + height) && !getInteractionsDisabled();
 
-			if (hover && isMouseButtonDown())
+			if (hover && isMouseButtonDown() && !getInteractionsDisabled())
 			{
 				int mouseIndex = (m.y - y) / noteHeight;
 				rhythm.stepList[i].cc = baseCC - mouseIndex;
