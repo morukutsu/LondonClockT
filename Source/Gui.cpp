@@ -4,15 +4,22 @@ int currentId = 0;
 GuiStore store[128];
 int currentDragId = -1;
 std::string currentDragUUID = "";
+bool isMouseOverKnob = false;
 
 void startGui()
 {
 	currentId = 0;
+	isMouseOverKnob = false;
 }
 
 bool getInteractionsDisabled()
 {
 	return currentDragId != -1;
+}
+
+bool getIsMouseOverKnob()
+{
+	return isMouseOverKnob;
 }
 
 bool drawClickableSquare(bool* enabled, int x, int y, Graphics& g, int mx, int my, bool mouseDown, bool mouseClick)
@@ -58,6 +65,8 @@ bool drawClickableSquare(bool* enabled, int x, int y, Graphics& g, int mx, int m
 bool drawKnobValue(int* value, int min, int max, int x, int y, int w, int h, char* text, Graphics& g, int mx, int my, bool isMouseDrag, int mouseDragDistanceY, std::string key)
 {
 	bool hover = (mx >= x && my >= y && mx <= x + w && my <= y + h);
+	if ((!isMouseOverKnob && hover) || currentDragId != -1)
+		isMouseOverKnob = true;
 
 	// Restore currentDragId using UUID
 	if (currentDragUUID != "" && key != "" && isMouseDrag)

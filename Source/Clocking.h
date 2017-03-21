@@ -7,6 +7,14 @@
 const int MAX_RHYTHMS = 16;
 const int MAX_STEPS = 16;
 
+#define PLUGIN_MAGIC "LDCT"
+
+enum PluginFormatVersion
+{
+	V0 = 0,
+	V1 = 1,
+};
+
 struct NoteOff
 {
 	unsigned int cc, timestamp;
@@ -59,6 +67,7 @@ public:
 
 	void serialize(MemoryOutputStream& stream);
 	void unserialize(MemoryInputStream& stream);
+	PluginFormatVersion detectFormatVersion(MemoryInputStream& stream);
 
 public:
 	unsigned int mTime;

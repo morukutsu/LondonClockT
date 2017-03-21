@@ -89,7 +89,7 @@ void LondonClockTAudioProcessorEditor::paint (Graphics& g)
 		dummy = true;
 		if (drawButton(&dummy, "+", 10 + 40, currentY, 38, 16, g, mousePos.x, mousePos.y, isMouseButtonDown(), isMouseClicked))
 		{
-			if (processor.mClocking.mRhythmsCount < 16)
+			if (processor.mClocking.mRhythmsCount < 12) // hard limit of 12 channels for the moment
 			{
 				processor.mClocking.mRhythmsCount++;
 				processor.mClocking.mRhythms[processor.mClocking.mRhythmsCount - 1].enabled = true;
@@ -98,6 +98,16 @@ void LondonClockTAudioProcessorEditor::paint (Graphics& g)
 	}
 
 	isMouseClicked = false;
+
+	// Mouse pointer management
+	if (getIsMouseOverKnob())
+	{
+		setMouseCursor(MouseCursor::UpDownResizeCursor);
+	}
+	else
+	{
+		setMouseCursor(MouseCursor::NormalCursor);
+	}
 }
 
 int LondonClockTAudioProcessorEditor::paintChannelStatus(int x, int y, Graphics& g, Rhythm& rhythm, int rhythmIndex)
@@ -108,7 +118,7 @@ int LondonClockTAudioProcessorEditor::paintChannelStatus(int x, int y, Graphics&
 	const float height = 16;
 	char buf[32];
 
-	const int KNOB_WIDTH = 38;
+	const int KNOB_WIDTH = 42;
 	const int SPACE = 2;
 	const int KNOB_WIDTH_SMALL = 32;
 

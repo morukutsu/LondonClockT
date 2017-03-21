@@ -63,6 +63,12 @@ void Clocking::reset()
 
 void Clocking::serialize(MemoryOutputStream& stream)
 {
+	// Write MAGIC and VERSION number
+	for (int i = 0; i < 4; i++)
+		stream.writeByte(PLUGIN_MAGIC[i]);
+	stream.writeInt(static_cast<int>(PluginFormatVersion::V1));
+
+	// Write content
 	stream.writeInt(mRhythmsCount);
 	for (int i = 0; i < mRhythmsCount; i++)
 		mRhythms[i].serialize(stream);
@@ -70,10 +76,33 @@ void Clocking::serialize(MemoryOutputStream& stream)
 
 void Clocking::unserialize(MemoryInputStream& stream)
 {
+	PluginFormatVersion version = detectFormatVersion(stream);
+	if (version == PluginFormatVersion::V0)
+		stream.setPosition(0);
+
 	mRhythmsCount = stream.readInt();
 	for (int i = 0; i < mRhythmsCount; i++)
 		mRhythms[i].unserialize(stream);
 }
+
+PluginFormatVersion Clocking::detectFormatVersion(MemoryInputStream& stream)
+{
+	stream.setPosition(0);
+
+	// First format does not have the magic value inside
+	char magic[4];
+	for (int i = 0; i < 4; i++)
+		magic[i] = stream.readByte();
+
+	if (strncmp(PLUGIN_MAGIC, magic, 4) != 0)
+		return PluginFormatVersion::V0;
+
+	// Read version from the stream
+	PluginFormatVersion version = static_cast<PluginFormatVersion>(stream.readInt());
+
+	return version;
+}
+
 
 /*
 	Rhythm class
