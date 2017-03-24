@@ -3,6 +3,8 @@
 
 #include "Gui.h"
 
+
+
 //==============================================================================
 LondonClockTAudioProcessorEditor::LondonClockTAudioProcessorEditor (LondonClockTAudioProcessor& p)
     : AudioProcessorEditor (&p), processor (p)
@@ -32,7 +34,7 @@ void LondonClockTAudioProcessorEditor::paint (Graphics& g)
 	startGui();
 
 	juce::Point<int> mousePos = getMouseXYRelative();
-    g.fillAll (juce::Colour::fromRGB(69, 69, 69) );
+    g.fillAll (GREY_BG_COLOR);
 
 	Font& f = g.getCurrentFont();
 	f.setBold(true);
@@ -147,13 +149,13 @@ void LondonClockTAudioProcessorEditor::paintRhythm(int x, int yPos, Graphics& g,
 	char buf[32];
 
 	// Background and progess bar
-	g.setColour(juce::Colour::fromRGB(165, 165, 165));
+	g.setColour(LIGHT_GREY_COLOR);
 	g.fillRect((float)x, y, width, height);
 
 	unsigned int completeLoopTime = rhythm.loopTime * rhythm.steps;
 	float progressWidth = (width / (completeLoopTime)) * fmodf(rhythm.time, completeLoopTime);
 
-	g.setColour(juce::Colour::fromRGB(229, 225, 143));
+	g.setColour(LOWLIGHT_COLOR);
 	g.fillRect((float)x, y, progressWidth, height);
 
 	// Steps
@@ -176,7 +178,7 @@ void LondonClockTAudioProcessorEditor::paintEditMode(int x, int yPos, Graphics& 
 	float height = 150;
 
 	// BG
-	g.setColour(juce::Colour::fromRGB(165, 165, 165));
+	g.setColour(LIGHT_GREY_COLOR);
 	g.fillRect((float)x, y, width, height);
 
 	// VEL EDITOR
@@ -194,9 +196,9 @@ void LondonClockTAudioProcessorEditor::paintEditMode(int x, int yPos, Graphics& 
 
 			bool hover = (m.x >= squareX && m.y >= y && m.x <= squareX + squareW && m.y <= squareY + height) && !getInteractionsDisabled();
 			if (!hover)
-				g.setColour(juce::Colour::fromRGB(255, 118, 118));
+				g.setColour(HIGHLIGHT_COLOR);
 			else
-				g.setColour(juce::Colour::fromRGB(255, 118 + 40, 118 + 40));
+				g.setColour(HIGHLIGHT_HOVER_COLOR);
 
 			// Modification of vel by mouse
 			if (hover && isMouseButtonDown() && !getInteractionsDisabled() )
@@ -221,7 +223,7 @@ void LondonClockTAudioProcessorEditor::paintEditMode(int x, int yPos, Graphics& 
 		float noteHeight = height / 12;
 
 		// Draw note squares
-		g.setColour(juce::Colour::fromRGB(255, 118, 118));
+		g.setColour(HIGHLIGHT_COLOR);
 		for (unsigned int i = 0; i < rhythm.steps; i++)
 		{
 			// Mouse input
@@ -246,9 +248,9 @@ void LondonClockTAudioProcessorEditor::paintEditMode(int x, int yPos, Graphics& 
 
 				// Mouse interaction
 				if (!hover)
-					g.setColour(juce::Colour::fromRGB(255, 118, 118));
+					g.setColour(HIGHLIGHT_COLOR);
 				else
-					g.setColour(juce::Colour::fromRGB(255, 118 + 40, 118 + 40));
+					g.setColour(HIGHLIGHT_HOVER_COLOR);
 
 				// Display
 				g.fillRect(squareX, squareY, squareW, squareH);
@@ -256,7 +258,7 @@ void LondonClockTAudioProcessorEditor::paintEditMode(int x, int yPos, Graphics& 
 		}
 
 		// Hover with note names
-		g.setColour(juce::Colour::fromRGB(64, 64, 64));
+		g.setColour(GREY_BG_COLOR);
 		for (int k = 0; k < 12; k++)
 		{
 			noteToStr(buf, baseCC - k);
@@ -274,7 +276,7 @@ void LondonClockTAudioProcessorEditor::paintEditMode(int x, int yPos, Graphics& 
 	
 
 	// Lines
-	g.setColour(juce::Colour::fromRGB(128, 128, 128));
+	g.setColour(MEDIUM_GREY_COLOR);
 	for (unsigned int i = 0; i < rhythm.steps; i++)
 	{
 		float stepX = i * (width / rhythm.steps);

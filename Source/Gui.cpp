@@ -24,7 +24,7 @@ bool getIsMouseOverKnob()
 
 bool drawClickableSquare(bool* enabled, int x, int y, Graphics& g, int mx, int my, bool mouseDown, bool mouseClick)
 {
-	g.setColour(juce::Colour::fromRGB(64, 64, 64));
+	g.setColour(GREY_BG_COLOR);
 	g.drawRect(x, y, 12, 12);
 
 	bool disableInteractions = currentDragId != -1;
@@ -34,18 +34,18 @@ bool drawClickableSquare(bool* enabled, int x, int y, Graphics& g, int mx, int m
 	if (hover && !disableInteractions)
 	{
 		if (*enabled)
-			g.setColour(juce::Colour::fromRGB(255, 118 + 40, 118 + 40));
+			g.setColour(HIGHLIGHT_HOVER_COLOR);
 		else
-			g.setColour(juce::Colour::fromRGB(165 + 40, 165 + 40, 165 + 40));
+			g.setColour(LIGHT_GREY_HOVER_COLOR);
 
 		clicked = mouseClick;
 	}
 	else
 	{
 		if (*enabled)
-			g.setColour(juce::Colour::fromRGB(255, 118, 118));
+			g.setColour(HIGHLIGHT_COLOR);
 		else
-			g.setColour(juce::Colour::fromRGB(165, 165, 165));
+			g.setColour(LIGHT_GREY_COLOR);
 	}
 
 	g.fillRect(x + 1, y + 1, 12 - 2, 12 - 2);
@@ -130,13 +130,13 @@ bool drawKnobValue(int* value, int min, int max, int x, int y, int w, int h, cha
 	}
 	
 	if (hover || currentDragId == currentId)
-		g.setColour(juce::Colour::fromRGB(255, 102 + 40, 102 + 40));
+		g.setColour(HIGHLIGHT_HOVER_COLOR);
 	else
-		g.setColour(juce::Colour::fromRGB(255, 102, 102));
+		g.setColour(HIGHLIGHT_COLOR);
 
 	g.fillRect(x, y, w, h);
 
-	g.setColour(juce::Colour::fromRGB(69, 69, 69));
+	g.setColour(GREY_BG_COLOR);
 
 	char str[32];
 	if (text == NULL)
@@ -162,18 +162,18 @@ bool drawButton(bool* enabled, char* text, int x, int y, int w, int h, Graphics&
 	if (hover && !disableInteractions)
 	{
 		if (*enabled)
-			g.setColour(juce::Colour::fromRGB(255, 102 + 40, 102 + 40));
+			g.setColour(HIGHLIGHT_HOVER_COLOR);
 		else
-			g.setColour(juce::Colour::fromRGB(165 + 40, 165 + 40, 165 + 40));
+			g.setColour(LIGHT_GREY_HOVER_COLOR);
 
 		clicked = mouseClick;
 	}
 	else
 	{
 		if (*enabled)
-			g.setColour(juce::Colour::fromRGB(255, 102, 102));
+			g.setColour(HIGHLIGHT_COLOR);
 		else
-			g.setColour(juce::Colour::fromRGB(165, 165, 165));
+			g.setColour(LIGHT_GREY_COLOR);
 	}
 
 	if (mouseDown && hover && !store[currentId].wasHover && !disableInteractions)
@@ -187,7 +187,7 @@ bool drawButton(bool* enabled, char* text, int x, int y, int w, int h, Graphics&
 	// Draw code
 	g.fillRect(x, y, w, h);
 
-	g.setColour(juce::Colour::fromRGB(69, 69, 69));
+	g.setColour(GREY_BG_COLOR);
 
 	g.drawText(text, x, y, w, h, juce::Justification::centred);
 

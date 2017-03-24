@@ -20,5 +20,13 @@ bool getIsMouseOverKnob();
 
 void noteToStr(char* str, int note);
 
+// Plugin colors
+const juce::Colour GREY_BG_COLOR = juce::Colour::fromRGB(69, 69, 69);
+const juce::Colour LIGHT_GREY_COLOR = juce::Colour::fromRGB(165, 165, 165);
+const juce::Colour HIGHLIGHT_COLOR = juce::Colour::fromRGB(255, 118, 118);
+const juce::Colour LIGHT_GREY_HOVER_COLOR = juce::Colour::fromRGB(165 + 40, 165 + 40, 165 + 40);
+const juce::Colour HIGHLIGHT_HOVER_COLOR = juce::Colour::fromRGB(255, 118 + 40, 118 + 40);
+const juce::Colour MEDIUM_GREY_COLOR = juce::Colour::fromRGB(128, 128, 128);
+const juce::Colour LOWLIGHT_COLOR = juce::Colour::fromRGB(229, 225, 143);
 
 #endif  // CLICKABLESQUARE_H_INCLUDED
