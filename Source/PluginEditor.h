@@ -23,12 +23,14 @@ public:
 	void paintEditMode(int x, int y, Graphics& g, Rhythm& rhythm, int index);
 
 	void buttonClicked(Button* button) override;
+
 	void mouseDown(const MouseEvent &event) override;
 	void mouseUp(const MouseEvent &event) override;
 	void mouseDrag(const MouseEvent &event) override;
 
 	bool isMouseDown, isMouseClicked, isMouseDrag;
 	int mouseDragDistanceY;
+
 	int editChannelId, editMode, baseCC;
 
 private:

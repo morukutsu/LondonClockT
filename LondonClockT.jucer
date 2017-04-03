@@ -7,7 +7,7 @@
               pluginManufacturer="Everything60" pluginManufacturerCode="E60V"
               pluginCode="S2cy" pluginChannelConfigs="" pluginIsSynth="0" pluginWantsMidiIn="0"
               pluginProducesMidiOut="1" pluginIsMidiEffectPlugin="1" pluginEditorRequiresKeys="0"
-              pluginAUExportPrefix="LondonClockTAU" pluginRTASCategory="" aaxIdentifier="com.yourcompany.LondonClockT"
+              pluginAUExportPrefix="LondonClockTAU" pluginRTASCategory="" aaxIdentifier="com.everything60.LondonClockT"
               pluginAAXCategory="AAX_ePlugInCategory_Dynamics" jucerVersion="4.3.1">
   <MAINGROUP id="ioAPFs" name="LondonClockT">
     <GROUP id="{4FF0AF9A-660C-5CC6-FBEF-EA2A71EE94A3}" name="Source">
