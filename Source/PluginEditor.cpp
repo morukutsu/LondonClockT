@@ -148,7 +148,7 @@ void LondonClockTAudioProcessorEditor::paintRhythm(int x, int yPos, Graphics& g,
 	g.setColour(LIGHT_GREY_COLOR);
 	g.fillRect((float)x, y, width, height);
 
-	unsigned int completeLoopTime = rhythm.loopTime * rhythm.steps;
+	unsigned int completeLoopTime = rhythm.loopTimeSecs * rhythm.divisor;
 	float progressWidth = (width / (completeLoopTime)) * fmodf(rhythm.time, completeLoopTime);
 
 	g.setColour(LOWLIGHT_COLOR);

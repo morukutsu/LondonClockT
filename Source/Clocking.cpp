@@ -138,9 +138,9 @@ void Rhythm::reset()
 void Rhythm::config(double bpm, double sampleRate)
 {
 	double beatsPerSec = bpm / 60.0;
-	loopTime = (unsigned int)(1.0 / beatsPerSec * sampleRate);
+	loopTimeSecs = (unsigned int)(1.0 / beatsPerSec * sampleRate);
 
-	loopTime = loopTime * ((float)divisor / steps);
+	loopTime = loopTimeSecs * ((double)divisor / steps);
 
 	sync();
 }
@@ -171,7 +171,9 @@ void Rhythm::tick(unsigned int currentSample, unsigned int timer, MidiBuffer& mi
 			noteOffs.push_back({ (unsigned int)stepList[stepId].cc, nextSampleTimestamp + loopTime / 4 });
 		}
 
-		nextSampleTimestamp = timer + loopTime;
+		double roundedLoopTime = floor(loopTimeSecs * ((double)divisor / steps));
+
+		nextSampleTimestamp = timer + roundedLoopTime;
 		nextStep = (nextStep + 1) % steps;
 	}
 
@@ -185,13 +187,15 @@ void Rhythm::tick(unsigned int currentSample, unsigned int timer, MidiBuffer& mi
 
 void Rhythm::sync()
 {
-	unsigned int completeLoopTime = loopTime * steps;
+	unsigned int completeLoopTime = loopTimeSecs * divisor;
 	unsigned int progress = time % completeLoopTime;
 
-	nextStep = (unsigned int)ceil(steps * (progress / (float)completeLoopTime));
+	nextStep = (unsigned int)ceil(steps * (progress / (double)completeLoopTime));
+
+	double roundedLoopTime = floor(loopTimeSecs * ((double)divisor / steps));
 
 	unsigned int sequenceStartTimestamp = time - progress;
-	nextSampleTimestamp = sequenceStartTimestamp + nextStep * loopTime;
+	nextSampleTimestamp = sequenceStartTimestamp + nextStep * roundedLoopTime;
 }
 
 void Rhythm::serialize(MemoryOutputStream& stream)

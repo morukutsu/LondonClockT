@@ -43,6 +43,7 @@ public:
 public:
 	bool enabled;
 	unsigned int loopTime;
+	double loopTimeSecs;
 	unsigned int time;
 	unsigned int nextSampleTimestamp, prevSampleTimestamp;
 	unsigned int midiNote, midiLevel;
