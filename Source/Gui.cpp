@@ -1,7 +1,7 @@
 #include "Gui.h"
 
 int currentId = 0;
-GuiStore store[128];
+GuiStore store[2048];
 int currentDragId = -1;
 std::string currentDragUUID = "";
 bool isMouseOverKnob = false;

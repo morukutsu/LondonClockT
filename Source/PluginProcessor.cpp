@@ -63,15 +63,18 @@ int LondonClockTAudioProcessor::getCurrentProgram()
 
 void LondonClockTAudioProcessor::setCurrentProgram (int index)
 {
+	ignoreUnused(index);
 }
 
 const String LondonClockTAudioProcessor::getProgramName (int index)
 {
+	ignoreUnused(index);
     return String();
 }
 
 void LondonClockTAudioProcessor::changeProgramName (int index, const String& newName)
 {
+	ignoreUnused(index, newName);
 }
 
 //==============================================================================
@@ -79,6 +82,7 @@ void LondonClockTAudioProcessor::prepareToPlay (double sampleRate, int samplesPe
 {
     // Use this method as the place to do any pre-playback
     // initialisation that you need..
+	ignoreUnused(sampleRate, samplesPerBlock);
 }
 
 void LondonClockTAudioProcessor::releaseResources()
@@ -130,7 +134,7 @@ void LondonClockTAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBu
 
 	if (lastPosInfo.isPlaying)
 	{
-		mClocking.update(lastPosInfo.timeInSamples, buffer.getNumSamples(), midiMessages);
+		mClocking.update((unsigned int)lastPosInfo.timeInSamples, buffer.getNumSamples(), midiMessages);
 	}
 	else
 	{

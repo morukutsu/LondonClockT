@@ -7,7 +7,7 @@
 //==============================================================================
 /**
 */
-class LondonClockTAudioProcessorEditor  : public AudioProcessorEditor, public Timer, public Button::Listener
+class LondonClockTAudioProcessorEditor  : public AudioProcessorEditor, public Timer
 {
 public:
     LondonClockTAudioProcessorEditor (LondonClockTAudioProcessor&);
@@ -21,8 +21,6 @@ public:
 	int  paintChannelStatus(int x, int y, Graphics& g, Rhythm& rhythm, int index);
 	void paintRhythm(int x, int y, Graphics& g, Rhythm& rhythm, int index);
 	void paintEditMode(int x, int y, Graphics& g, Rhythm& rhythm, int index);
-
-	void buttonClicked(Button* button) override;
 
 	void mouseDown(const MouseEvent &event) override;
 	void mouseUp(const MouseEvent &event) override;

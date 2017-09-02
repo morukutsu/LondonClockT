@@ -20,10 +20,6 @@ LondonClockTAudioProcessorEditor::~LondonClockTAudioProcessorEditor()
 {
 }
 
-void LondonClockTAudioProcessorEditor::buttonClicked(Button* button)
-{
-}
-
 //==============================================================================
 void LondonClockTAudioProcessorEditor::paint (Graphics& g)
 {
@@ -32,13 +28,13 @@ void LondonClockTAudioProcessorEditor::paint (Graphics& g)
 	juce::Point<int> mousePos = getMouseXYRelative();
     g.fillAll (GREY_BG_COLOR);
 
-	Font& f = g.getCurrentFont();
+	Font f = g.getCurrentFont();
 	f.setBold(true);
 	g.setFont(f);
 
 	int currentY = 0;
 	int currentX = 10;
-	int channelStatusWidth;
+	int channelStatusWidth = 0;
 	const int EDIT_MODE_WIDTH = 300 + 2;
 	const int PADDING_TOP = 10;
 
@@ -53,7 +49,9 @@ void LondonClockTAudioProcessorEditor::paint (Graphics& g)
 
 		// Edit
 		bool isEdit = editChannelId == i;
-		if (drawButton(&isEdit, "EDIT", channelStatusWidth + EDIT_MODE_WIDTH, PADDING_TOP + i * rhythmHeight, 36, 16, g, mousePos.x, mousePos.y, isMouseButtonDown(), isMouseClicked))
+		if (drawButton(&isEdit, "EDIT", channelStatusWidth + EDIT_MODE_WIDTH, 
+			PADDING_TOP + i * rhythmHeight, 36, 16, g, mousePos.x, mousePos.y, isMouseButtonDown(), isMouseClicked)
+		)
 		{
 			if (editChannelId == i)
 				editChannelId = -1; // Disable edit mode when pressing edit mode if on
@@ -137,19 +135,20 @@ int LondonClockTAudioProcessorEditor::paintChannelStatus(int x, int y, Graphics&
 
 void LondonClockTAudioProcessorEditor::paintRhythm(int x, int yPos, Graphics& g, Rhythm& rhythm, int rhythmIndex)
 {
+	ignoreUnused(rhythmIndex);
+
 	juce::Point<int> mousePos = getMouseXYRelative();
 
-	float y = yPos;
+	float y = (float)yPos;
 	float width = 300;
 	float height = 16;
-	char buf[32];
 
 	// Background and progess bar
 	g.setColour(LIGHT_GREY_COLOR);
 	g.fillRect((float)x, y, width, height);
 
-	unsigned int completeLoopTime = rhythm.loopTimeSecs * rhythm.divisor;
-	float progressWidth = (width / (completeLoopTime)) * fmodf(rhythm.time, completeLoopTime);
+	unsigned int completeLoopTime = (unsigned int)(rhythm.loopTimeSecs * rhythm.divisor);
+	float progressWidth = (width / ((float)completeLoopTime)) * fmodf((float)rhythm.time, (float)completeLoopTime);
 
 	g.setColour(LOWLIGHT_COLOR);
 	g.fillRect((float)x, y, progressWidth, height);
@@ -158,7 +157,7 @@ void LondonClockTAudioProcessorEditor::paintRhythm(int x, int yPos, Graphics& g,
 	for (unsigned int i = 0; i < rhythm.steps; i++)
 	{
 		float stepX = i * (width / rhythm.steps);
-		drawClickableSquare(&rhythm.stepList[i].enabled, 2 + x + stepX, 2 + y, g, mousePos.x, mousePos.y, isMouseButtonDown(), isMouseClicked);
+		drawClickableSquare(&rhythm.stepList[i].enabled, 2 + x + (int)stepX, 2 + (int)y, g, mousePos.x, mousePos.y, isMouseButtonDown(), isMouseClicked);
 	}
 
 	x += 300;
@@ -167,9 +166,11 @@ void LondonClockTAudioProcessorEditor::paintRhythm(int x, int yPos, Graphics& g,
 
 void LondonClockTAudioProcessorEditor::paintEditMode(int x, int yPos, Graphics& g, Rhythm& rhythm, int index)
 {
+	ignoreUnused(index);
+
 	juce::Point<int> m = getMouseXYRelative();
 
-	float y = yPos;
+	float y = (float)yPos;
 	float width = 300;
 	float height = 150;
 
@@ -199,7 +200,7 @@ void LondonClockTAudioProcessorEditor::paintEditMode(int x, int yPos, Graphics& 
 			// Modification of vel by mouse
 			if (hover && isMouseButtonDown() && !getInteractionsDisabled() )
 			{
-				int l = (m.y - y) * (128 / height);
+				int l = (int)((m.y - y) * (128 / height));
 				if (l < 0)
 					l = 0;
 				if (l > 127)
@@ -232,7 +233,7 @@ void LondonClockTAudioProcessorEditor::paintEditMode(int x, int yPos, Graphics& 
 
 			if (hover && isMouseButtonDown() && !getInteractionsDisabled())
 			{
-				int mouseIndex = (m.y - y) / noteHeight;
+				int mouseIndex = (int)((m.y - y) / noteHeight);
 				rhythm.stepList[i].cc = baseCC - mouseIndex;
 			}
 
@@ -258,13 +259,13 @@ void LondonClockTAudioProcessorEditor::paintEditMode(int x, int yPos, Graphics& 
 		for (int k = 0; k < 12; k++)
 		{
 			noteToStr(buf, baseCC - k);
-			g.drawText(buf, x + 2, y + k * noteHeight, 32, noteHeight, juce::Justification::left);
+			g.drawText(buf, x + 2, (int)(y + k * noteHeight), 32, (int)noteHeight, juce::Justification::left);
 		}
 
 		// Change base CC
 		int octave = (baseCC / 12) - 2;
 		sprintf(buf, "OCT %d", octave);
-		if (drawKnobValue(&octave, 1, 8, x, y + height + 4 + 18, 40, 16, buf, g, m.x, m.y, isMouseDrag, mouseDragDistanceY))
+		if (drawKnobValue(&octave, 1, 8, x, (int)(y + height) + 4 + 18, 40, 16, buf, g, m.x, m.y, isMouseDrag, mouseDragDistanceY))
 		{
 			baseCC = (octave + 2) * 12;
 		}
@@ -276,17 +277,17 @@ void LondonClockTAudioProcessorEditor::paintEditMode(int x, int yPos, Graphics& 
 	for (unsigned int i = 0; i < rhythm.steps; i++)
 	{
 		float stepX = i * (width / rhythm.steps);
-		g.drawVerticalLine((int)stepX + x, yPos, yPos + height);
+		g.drawVerticalLine((int)stepX + x, (float)yPos, yPos + height);
 	}
 
 	// Buttons
 	bool isNoteEdit = editMode == 0;
 	bool isVelEdit  = editMode == 1;
 
-	if (drawButton(&isNoteEdit, "NOTE", x, y + height + 4, 40, 16, g, m.x, m.y, isMouseButtonDown(), isMouseClicked))
+	if (drawButton(&isNoteEdit, "NOTE", x, (int)(y + height + 4), 40, 16, g, m.x, m.y, isMouseButtonDown(), isMouseClicked))
 		editMode = 0;
 	
-	if (drawButton(&isVelEdit, "VEL", x + 42, y + height + 4, 40, 16, g, m.x, m.y, isMouseButtonDown(), isMouseClicked))
+	if (drawButton(&isVelEdit, "VEL", x + 42, (int)(y + height + 4), 40, 16, g, m.x, m.y, isMouseButtonDown(), isMouseClicked))
 		editMode = 1;
 }
 
@@ -301,11 +302,14 @@ void LondonClockTAudioProcessorEditor::timerCallback()
 
 void LondonClockTAudioProcessorEditor::mouseDown(const MouseEvent &event)
 {
+	ignoreUnused(event);
 	isMouseDown = true;
 }
 
 void LondonClockTAudioProcessorEditor::mouseUp(const MouseEvent &event)
 {
+	ignoreUnused(event);
+
 	if (isMouseDown)
 	{
 		isMouseClicked = true;

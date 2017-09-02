@@ -81,6 +81,8 @@ void Clocking::unserialize(MemoryInputStream& stream)
 		stream.setPosition(0);
 
 	mRhythmsCount = stream.readInt();
+	jassert(mRhythmsCount <= MAX_RHYTHMS);
+
 	for (int i = 0; i < mRhythmsCount; i++)
 		mRhythms[i].unserialize(stream);
 }
@@ -140,13 +142,15 @@ void Rhythm::config(double bpm, double sampleRate)
 	double beatsPerSec = bpm / 60.0;
 	loopTimeSecs = (unsigned int)(1.0 / beatsPerSec * sampleRate);
 
-	loopTime = loopTimeSecs * ((double)divisor / steps);
+	loopTime = (unsigned int)(loopTimeSecs * ((double)divisor / steps));
 
 	sync();
 }
 
 void Rhythm::update(unsigned int transportSamplePos, unsigned int numSamples)
 {
+	ignoreUnused(transportSamplePos);
+
 	time += numSamples;
 
 	// Clear sent note offs
@@ -173,7 +177,7 @@ void Rhythm::tick(unsigned int currentSample, unsigned int timer, MidiBuffer& mi
 
 		double roundedLoopTime = floor(loopTimeSecs * ((double)divisor / steps));
 
-		nextSampleTimestamp = timer + roundedLoopTime;
+		nextSampleTimestamp = (unsigned int)(timer + roundedLoopTime);
 		nextStep = (nextStep + 1) % steps;
 	}
 
@@ -187,7 +191,7 @@ void Rhythm::tick(unsigned int currentSample, unsigned int timer, MidiBuffer& mi
 
 void Rhythm::sync()
 {
-	unsigned int completeLoopTime = loopTimeSecs * divisor;
+	unsigned int completeLoopTime = (unsigned int)(loopTimeSecs * divisor);
 	unsigned int progress = time % completeLoopTime;
 
 	nextStep = (unsigned int)ceil(steps * (progress / (double)completeLoopTime));
@@ -195,7 +199,7 @@ void Rhythm::sync()
 	double roundedLoopTime = floor(loopTimeSecs * ((double)divisor / steps));
 
 	unsigned int sequenceStartTimestamp = time - progress;
-	nextSampleTimestamp = sequenceStartTimestamp + nextStep * roundedLoopTime;
+	nextSampleTimestamp = (unsigned int)(sequenceStartTimestamp + nextStep * roundedLoopTime);
 }
 
 void Rhythm::serialize(MemoryOutputStream& stream)
