@@ -68,6 +68,9 @@ bool drawKnobValue(int* value, int min, int max, int x, int y, int w, int h, cha
 	if ((!isMouseOverKnob && hover) || currentDragId != -1)
 		isMouseOverKnob = true;
 
+	if (getInteractionsDisabled())
+		hover = false;
+
 	// Restore currentDragId using UUID
 	if (currentDragUUID != "" && key != "" && isMouseDrag)
 	{

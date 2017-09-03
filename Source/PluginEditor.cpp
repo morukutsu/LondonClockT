@@ -7,7 +7,7 @@
 LondonClockTAudioProcessorEditor::LondonClockTAudioProcessorEditor (LondonClockTAudioProcessor& p)
     : AudioProcessorEditor (&p), processor (p)
 {
-    setSize(470, 300);
+    setSize(466, 300);
 	startTimerHz(60);
 
 	isMouseDown = isMouseClicked = isMouseDrag = false;
@@ -33,10 +33,10 @@ void LondonClockTAudioProcessorEditor::paint (Graphics& g)
 	g.setFont(f);
 
 	int currentY = 0;
-	int currentX = 10;
+	int currentX = 6;
 	int channelStatusWidth = 0;
 	const int EDIT_MODE_WIDTH = 300 + 2;
-	const int PADDING_TOP = 10;
+	const int PADDING_TOP = 6;
 
 	// Draw all the rhythms controllers
 	const int rhythmHeight = 20;
@@ -114,7 +114,7 @@ int LondonClockTAudioProcessorEditor::paintChannelStatus(int x, int y, Graphics&
 	const float height = 16;
 	char buf[32];
 
-	const int KNOB_WIDTH = 42;
+	const int KNOB_WIDTH = 46;
 	const int SPACE = 2;
 	const int KNOB_WIDTH_SMALL = 32;
 
