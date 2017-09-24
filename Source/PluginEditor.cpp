@@ -10,7 +10,7 @@ LondonClockTAudioProcessorEditor::LondonClockTAudioProcessorEditor (LondonClockT
     setSize(466, 300);
 	startTimerHz(60);
 
-	isMouseDown = isMouseClicked = isMouseDrag = false;
+	isMouseDown = isMouseClicked = isMouseDrag = isMousePressed = false;
 	editChannelId = -1;
 	editMode = 0;
 	baseCC = 60;
@@ -48,9 +48,13 @@ void LondonClockTAudioProcessorEditor::paint (Graphics& g)
 			paintRhythm(channelStatusWidth, PADDING_TOP + i * rhythmHeight, g, processor.mClocking.mRhythms[i], i);
 
 		// Edit
+		char buf[16];
+		sprintf(buf, "EDIT%d", i);
+
 		bool isEdit = editChannelId == i;
-		if (drawButton(&isEdit, "EDIT", channelStatusWidth + EDIT_MODE_WIDTH, 
-			PADDING_TOP + i * rhythmHeight, 36, 16, g, mousePos.x, mousePos.y, isMouseButtonDown(), isMouseClicked)
+		if (drawButton(buf, &isEdit, "EDIT", channelStatusWidth + EDIT_MODE_WIDTH,
+			PADDING_TOP + i * rhythmHeight, 36, 16, g, mousePos.x, mousePos.y, isMouseButtonDown(), 
+			isMouseClicked, isMousePressed)
 		)
 		{
 			if (editChannelId == i)
@@ -73,7 +77,7 @@ void LondonClockTAudioProcessorEditor::paint (Graphics& g)
 	{
 		// Additional controls at the bottom
 		bool dummy = true;
-		if (drawButton(&dummy, "-", 10, currentY, 38, 16, g, mousePos.x, mousePos.y, isMouseButtonDown(), isMouseClicked))
+		if (drawButton(NULL, &dummy, "-", 10, currentY, 38, 16, g, mousePos.x, mousePos.y, isMouseButtonDown(), isMouseClicked, isMousePressed))
 		{
 			if (processor.mClocking.mRhythmsCount > 1)
 			{
@@ -83,7 +87,7 @@ void LondonClockTAudioProcessorEditor::paint (Graphics& g)
 		}
 
 		dummy = true;
-		if (drawButton(&dummy, "+", 10 + 40, currentY, 38, 16, g, mousePos.x, mousePos.y, isMouseButtonDown(), isMouseClicked))
+		if (drawButton(NULL, &dummy, "+", 10 + 40, currentY, 38, 16, g, mousePos.x, mousePos.y, isMouseButtonDown(), isMouseClicked, isMousePressed))
 		{
 			if (processor.mClocking.mRhythmsCount < 12) // hard limit of 12 channels for the moment
 			{
@@ -94,6 +98,7 @@ void LondonClockTAudioProcessorEditor::paint (Graphics& g)
 	}
 
 	isMouseClicked = false;
+	isMousePressed = false;
 
 	// Mouse pointer management
 	if (getIsMouseOverKnob())
@@ -120,7 +125,7 @@ int LondonClockTAudioProcessorEditor::paintChannelStatus(int x, int y, Graphics&
 
 	// Channel status
 	sprintf(buf, "%d %s", (rhythmIndex + 1), rhythm.enabled ? "ON" : "OFF");
-	drawButton(&rhythm.enabled, buf, x, y, KNOB_WIDTH, 16, g, mousePos.x, mousePos.y, isMouseButtonDown(), isMouseClicked);
+	drawButton(NULL, &rhythm.enabled, buf, x, y, KNOB_WIDTH, 16, g, mousePos.x, mousePos.y, isMouseButtonDown(), isMouseClicked, isMousePressed);
 	x += KNOB_WIDTH + SPACE;
 
 	// Staps & divisor
@@ -148,7 +153,10 @@ void LondonClockTAudioProcessorEditor::paintRhythm(int x, int yPos, Graphics& g,
 	g.fillRect((float)x, y, width, height);
 
 	unsigned int completeLoopTime = (unsigned int)(rhythm.loopTimeSecs * rhythm.divisor);
-	float progressWidth = (width / ((float)completeLoopTime)) * fmodf((float)rhythm.time, (float)completeLoopTime);
+	float progressWidth = 0.0f;
+
+	if (completeLoopTime != 0)
+		progressWidth = (width / ((float)completeLoopTime)) * fmodf((float)rhythm.time, (float)completeLoopTime);
 
 	g.setColour(LOWLIGHT_COLOR);
 	g.fillRect((float)x, y, progressWidth, height);
@@ -157,7 +165,9 @@ void LondonClockTAudioProcessorEditor::paintRhythm(int x, int yPos, Graphics& g,
 	for (unsigned int i = 0; i < rhythm.steps; i++)
 	{
 		float stepX = i * (width / rhythm.steps);
-		drawClickableSquare(&rhythm.stepList[i].enabled, 2 + x + (int)stepX, 2 + (int)y, g, mousePos.x, mousePos.y, isMouseButtonDown(), isMouseClicked);
+		drawClickableSquare(&rhythm.stepList[i].enabled, 2 + x + (int)stepX, 2 + (int)y, g, 
+			mousePos.x, mousePos.y, isMouseButtonDown(), isMouseClicked, isMousePressed
+		);
 	}
 
 	x += 300;
@@ -284,10 +294,10 @@ void LondonClockTAudioProcessorEditor::paintEditMode(int x, int yPos, Graphics& 
 	bool isNoteEdit = editMode == 0;
 	bool isVelEdit  = editMode == 1;
 
-	if (drawButton(&isNoteEdit, "NOTE", x, (int)(y + height + 4), 40, 16, g, m.x, m.y, isMouseButtonDown(), isMouseClicked))
+	if (drawButton(NULL, &isNoteEdit, "NOTE", x, (int)(y + height + 4), 40, 16, g, m.x, m.y, isMouseButtonDown(), isMouseClicked, isMousePressed))
 		editMode = 0;
 	
-	if (drawButton(&isVelEdit, "VEL", x + 42, (int)(y + height + 4), 40, 16, g, m.x, m.y, isMouseButtonDown(), isMouseClicked))
+	if (drawButton(NULL, &isVelEdit, "VEL", x + 42, (int)(y + height + 4), 40, 16, g, m.x, m.y, isMouseButtonDown(), isMouseClicked, isMousePressed))
 		editMode = 1;
 }
 
@@ -304,6 +314,7 @@ void LondonClockTAudioProcessorEditor::mouseDown(const MouseEvent &event)
 {
 	ignoreUnused(event);
 	isMouseDown = true;
+	isMousePressed = true;
 }
 
 void LondonClockTAudioProcessorEditor::mouseUp(const MouseEvent &event)

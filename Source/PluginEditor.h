@@ -26,7 +26,7 @@ public:
 	void mouseUp(const MouseEvent &event) override;
 	void mouseDrag(const MouseEvent &event) override;
 
-	bool isMouseDown, isMouseClicked, isMouseDrag;
+	bool isMouseDown, isMouseClicked, isMouseDrag, isMousePressed;
 	int mouseDragDistanceY;
 
 	int editChannelId, editMode, baseCC;

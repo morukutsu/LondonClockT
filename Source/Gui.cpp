@@ -1,10 +1,66 @@
 #include "Gui.h"
+#include <unordered_map>
 
 int currentId = 0;
-GuiStore store[2048];
 int currentDragId = -1;
 std::string currentDragUUID = "";
 bool isMouseOverKnob = false;
+std::unordered_map<unsigned int, GuiStore> guiStore;
+
+GuiStore& getGuiElement(unsigned int id)
+{
+	return guiStore[id];
+}
+
+unsigned int ImHash(const void* data, int data_size, unsigned int seed)
+{
+	static unsigned int crc32_lut[256] = { 0 };
+	if (!crc32_lut[1])
+	{
+		const unsigned int polynomial = 0xEDB88320;
+		for (unsigned int i = 0; i < 256; i++)
+		{
+			unsigned int crc = i;
+			for (unsigned int j = 0; j < 8; j++)
+				crc = (crc >> 1) ^ (unsigned int(-int(crc & 1)) & polynomial);
+			crc32_lut[i] = crc;
+		}
+	}
+
+	seed = ~seed;
+	unsigned int crc = seed;
+	const unsigned char* current = (const unsigned char*)data;
+
+	if (data_size > 0)
+	{
+		// Known size
+		while (data_size--)
+			crc = (crc >> 8) ^ crc32_lut[(crc & 0xFF) ^ *current++];
+	}
+	else
+	{
+		// Zero-terminated string
+		while (unsigned char c = *current++)
+		{
+			// We support a syntax of "label###id" where only "###id" is included in the hash, and only "label" gets displayed.
+			// Because this syntax is rarely used we are optimizing for the common case.
+			// - If we reach ### in the string we discard the hash so far and reset to the seed.
+			// - We don't do 'current += 2; continue;' after handling ### to keep the code smaller.
+			if (c == '#' && current[0] == '#' && current[1] == '#')
+				crc = seed;
+			crc = (crc >> 8) ^ crc32_lut[(crc & 0xFF) ^ c];
+		}
+	}
+	return ~crc;
+}
+
+unsigned int getId(char* label)
+{
+	if (label == NULL)
+		return currentId;
+	else
+		return ImHash(label, strlen(label), 1234);
+}
 
 void startGui()
 {
@@ -22,8 +78,12 @@ bool getIsMouseOverKnob()
 	return isMouseOverKnob;
 }
 
-bool drawClickableSquare(bool* enabled, int x, int y, Graphics& g, int mx, int my, bool mouseDown, bool mouseClick)
+bool drawClickableSquare(bool* enabled, int x, int y, Graphics& g, int mx, int my, bool mouseDown, bool mouseClick, bool mousePressed)
 {
+	ignoreUnused(mouseClick);
+
+	GuiStore& guiElement = getGuiElement(currentId);
+
 	g.setColour(GREY_BG_COLOR);
 	g.drawRect(x, y, 12, 12);
 
@@ -38,7 +98,7 @@ bool drawClickableSquare(bool* enabled, int x, int y, Graphics& g, int mx, int m
 		else
 			g.setColour(LIGHT_GREY_HOVER_COLOR);
 
-		clicked = mouseClick;
+		clicked = mousePressed;
 	}
 	else
 	{
@@ -50,13 +110,13 @@ bool drawClickableSquare(bool* enabled, int x, int y, Graphics& g, int mx, int m
 
 	g.fillRect(x + 1, y + 1, 12 - 2, 12 - 2);
 
-	if (mouseDown && hover && !store[currentId].wasHover && !disableInteractions)
+	if (mouseDown && hover && !guiElement.wasHover && !disableInteractions)
 		clicked = true;
 
 	if (clicked)
 		*enabled = !*enabled;
 
-	store[currentId].wasHover = hover;
+	guiElement.wasHover = hover;
 
 	currentId++;
 	return clicked;
@@ -64,6 +124,8 @@ bool drawClickableSquare(bool* enabled, int x, int y, Graphics& g, int mx, int m
 
 bool drawKnobValue(int* value, int min, int max, int x, int y, int w, int h, char* text, Graphics& g, int mx, int my, bool isMouseDrag, int mouseDragDistanceY, std::string key)
 {
+	GuiStore& guiElement = getGuiElement(currentId);
+
 	bool hover = (mx >= x && my >= y && mx <= x + w && my <= y + h);
 	if ((!isMouseOverKnob && hover) || currentDragId != -1)
 		isMouseOverKnob = true;
@@ -76,17 +138,19 @@ bool drawKnobValue(int* value, int min, int max, int x, int y, int w, int h, cha
 	{
 		if (key == currentDragUUID)
 		{
+			GuiStore& dragElement = getGuiElement(currentDragId);
 			if (currentDragId != -1)
-				store[currentDragId].isDrag = false;
-			store[currentId].isDrag = true;
+				dragElement.isDrag = false;
+
+			guiElement.isDrag = true;
 			currentDragId = currentId;
 		}
 	}
 
-	if (hover && isMouseDrag && !store[currentId].isDrag && currentDragId == -1)
+	if (hover && isMouseDrag && !guiElement.isDrag && currentDragId == -1)
 	{
-		store[currentId].isDrag = true;
-		store[currentId].dragStartValue = *value;
+		guiElement.isDrag = true;
+		guiElement.dragStartValue = *value;
 		currentDragId = currentId;
 
 		if (key != "")
@@ -95,7 +159,7 @@ bool drawKnobValue(int* value, int min, int max, int x, int y, int w, int h, cha
 	
 	bool changed = false;
 
-	if (store[currentId].isDrag && currentDragId == currentId)
+	if (guiElement.isDrag && currentDragId == currentId)
 	{
 		if (isMouseDrag)
 		{
@@ -104,7 +168,7 @@ bool drawKnobValue(int* value, int min, int max, int x, int y, int w, int h, cha
 			const int unit = mouseMaxDisplacement / scale;
 
 			const int oldValue = *value;
-			*value = store[currentId].dragStartValue - (mouseDragDistanceY / unit);
+			*value = guiElement.dragStartValue - (mouseDragDistanceY / unit);
 
 			changed = oldValue != *value;
 
@@ -125,7 +189,7 @@ bool drawKnobValue(int* value, int min, int max, int x, int y, int w, int h, cha
 
 	if (!isMouseDrag)
 	{
-		store[currentId].isDrag = false;
+		guiElement.isDrag = false;
 		currentDragId = -1;
 
 		if (key != "")
@@ -156,8 +220,12 @@ bool drawKnobValue(int* value, int min, int max, int x, int y, int w, int h, cha
 	return changed;
 }
 
-bool drawButton(bool* enabled, char* text, int x, int y, int w, int h, Graphics& g, int mx, int my, bool mouseDown, bool mouseClick)
+bool drawButton(char* label, bool* enabled, char* text, int x, int y, int w, int h, Graphics& g, int mx, int my, bool mouseDown, bool mouseClick, bool mousePressed)
 {
+	ignoreUnused(mouseClick);
+
+	GuiStore& guiElement = getGuiElement(getId(label) );
+
 	bool disableInteractions = currentDragId != -1;
 	bool hover = (mx >= x && my >= y && mx <= x + w && my <= y + h);
 	bool clicked = false;
@@ -169,7 +237,7 @@ bool drawButton(bool* enabled, char* text, int x, int y, int w, int h, Graphics&
 		else
 			g.setColour(LIGHT_GREY_HOVER_COLOR);
 
-		clicked = mouseClick;
+		clicked = mousePressed;
 	}
 	else
 	{
@@ -179,13 +247,13 @@ bool drawButton(bool* enabled, char* text, int x, int y, int w, int h, Graphics&
 			g.setColour(LIGHT_GREY_COLOR);
 	}
 
-	if (mouseDown && hover && !store[currentId].wasHover && !disableInteractions)
+	if (mouseDown && hover && !guiElement.wasHover && !disableInteractions)
 		clicked = true;
 
 	if (clicked)
 		*enabled = !*enabled;
 
-	store[currentId].wasHover = hover;
+	guiElement.wasHover = hover;
 
 	// Draw code
 	g.fillRect(x, y, w, h);

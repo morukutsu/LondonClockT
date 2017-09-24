@@ -139,12 +139,18 @@ void Rhythm::reset()
 
 void Rhythm::config(double bpm, double sampleRate)
 {
-	double beatsPerSec = bpm / 60.0;
-	loopTimeSecs = (unsigned int)(1.0 / beatsPerSec * sampleRate);
+	if (bpm > 0)
+	{
+		double beatsPerSec = bpm / 60.0;
+		if (beatsPerSec > 0)
+		{
+			loopTimeSecs = (unsigned int)(1.0 / beatsPerSec * sampleRate);
 
-	loopTime = (unsigned int)(loopTimeSecs * ((double)divisor / steps));
+			loopTime = (unsigned int)(loopTimeSecs * ((double)divisor / steps));
 
-	sync();
+			sync();
+		}
+	}
 }
 
 void Rhythm::update(unsigned int transportSamplePos, unsigned int numSamples)
@@ -192,9 +198,13 @@ void Rhythm::tick(unsigned int currentSample, unsigned int timer, MidiBuffer& mi
 void Rhythm::sync()
 {
 	unsigned int completeLoopTime = (unsigned int)(loopTimeSecs * divisor);
-	unsigned int progress = time % completeLoopTime;
 
-	nextStep = (unsigned int)ceil(steps * (progress / (double)completeLoopTime));
+	unsigned int progress = 0;
+	if (completeLoopTime != 0)
+		progress = time % completeLoopTime;
+
+	if (completeLoopTime != 0)
+		nextStep = (unsigned int)ceil(steps * (progress / (double)completeLoopTime));
 
 	double roundedLoopTime = floor(loopTimeSecs * ((double)divisor / steps));
 
