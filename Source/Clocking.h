@@ -23,7 +23,14 @@ struct NoteOff
 struct Step
 {
 	bool enabled;
-	int cc, level, duration;
+	int cc, level, duration, offset;
+};
+
+enum StepValueType
+{
+	LEVEL,
+	OFFSET,
+	STEP_VALUE_TYPE_COUNT
 };
 
 class Rhythm
@@ -36,6 +43,9 @@ public:
 	void update(unsigned int transportSamplePos, unsigned int numSamples);
 	void tick(unsigned int currentSample, unsigned int timer, MidiBuffer& midi);
 	void sync();
+
+	void stepValueSetter(StepValueType type, int index, int value);
+	int  stepValueGetter(StepValueType type, int index);
 
 	void serialize(MemoryOutputStream& stream);
 	void unserialize(MemoryInputStream& stream);

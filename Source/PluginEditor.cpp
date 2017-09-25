@@ -77,7 +77,7 @@ void LondonClockTAudioProcessorEditor::paint (Graphics& g)
 	{
 		// Additional controls at the bottom
 		bool dummy = true;
-		if (drawButton(NULL, &dummy, "-", 10, currentY, 38, 16, g, mousePos.x, mousePos.y, isMouseButtonDown(), isMouseClicked, isMousePressed))
+		if (drawButton(NULL, &dummy, "-", 6, currentY, 38, 16, g, mousePos.x, mousePos.y, isMouseButtonDown(), isMouseClicked, isMousePressed))
 		{
 			if (processor.mClocking.mRhythmsCount > 1)
 			{
@@ -87,7 +87,7 @@ void LondonClockTAudioProcessorEditor::paint (Graphics& g)
 		}
 
 		dummy = true;
-		if (drawButton(NULL, &dummy, "+", 10 + 40, currentY, 38, 16, g, mousePos.x, mousePos.y, isMouseButtonDown(), isMouseClicked, isMousePressed))
+		if (drawButton(NULL, &dummy, "+", 6 + 40, currentY, 38, 16, g, mousePos.x, mousePos.y, isMouseButtonDown(), isMouseClicked, isMousePressed))
 		{
 			if (processor.mClocking.mRhythmsCount < 12) // hard limit of 12 channels for the moment
 			{
@@ -174,6 +174,44 @@ void LondonClockTAudioProcessorEditor::paintRhythm(int x, int yPos, Graphics& g,
 
 }
 
+void LondonClockTAudioProcessorEditor::standardValueEditor(StepValueType type, float x, float y, float width, float height, 
+	Rhythm& rhythm, int maxValue, Graphics& g)
+{
+	juce::Point<int> m = getMouseXYRelative();
+
+	for (unsigned int i = 0; i < rhythm.steps; i++)
+	{
+		float stepX = i * (width / rhythm.steps);
+		float level = (height / maxValue) * rhythm.stepValueGetter(type, i);
+
+		float squareX = stepX + x;
+		float squareY = y + (height - level);
+		float squareW = width / rhythm.steps;
+		float squareH = level;
+
+		bool hover = (m.x >= squareX && m.y >= y && m.x <= squareX + squareW && m.y <= y + height) && !getInteractionsDisabled();
+		if (!hover)
+			g.setColour(HIGHLIGHT_COLOR);
+		else
+			g.setColour(HIGHLIGHT_HOVER_COLOR);
+
+		// Modification of value using the mouse
+		if (hover && isMouseButtonDown() && !getInteractionsDisabled())
+		{
+			int l = (int)((m.y - y) * (maxValue / height));
+			if (l < 0)
+				l = 0;
+			if (l > maxValue - 1)
+				l = maxValue - 1;
+
+			l = maxValue - l;
+			rhythm.stepValueSetter(type, i, l);
+		}
+
+		g.fillRect(squareX, squareY, squareW, squareH);
+	}
+}
+
 void LondonClockTAudioProcessorEditor::paintEditMode(int x, int yPos, Graphics& g, Rhythm& rhythm, int index)
 {
 	ignoreUnused(index);
@@ -191,37 +229,11 @@ void LondonClockTAudioProcessorEditor::paintEditMode(int x, int yPos, Graphics& 
 	// VEL EDITOR
 	if (editMode == 1)
 	{
-		for (unsigned int i = 0; i < rhythm.steps; i++)
-		{
-			float stepX = i * (width / rhythm.steps);
-			float level = (height / 128) * rhythm.stepList[i].level;
-
-			float squareX = stepX + x;
-			float squareY = y + (height - level);
-			float squareW = width / rhythm.steps;
-			float squareH = level;
-
-			bool hover = (m.x >= squareX && m.y >= y && m.x <= squareX + squareW && m.y <= squareY + height) && !getInteractionsDisabled();
-			if (!hover)
-				g.setColour(HIGHLIGHT_COLOR);
-			else
-				g.setColour(HIGHLIGHT_HOVER_COLOR);
-
-			// Modification of vel by mouse
-			if (hover && isMouseButtonDown() && !getInteractionsDisabled() )
-			{
-				int l = (int)((m.y - y) * (128 / height));
-				if (l < 0)
-					l = 0;
-				if (l > 127)
-					l = 127;
-
-				l = 127 - l;
-				rhythm.stepList[i].level = l;
-			}
-
-			g.fillRect(squareX, squareY, squareW, squareH);
-		}
+		standardValueEditor(LEVEL, x, y, width, height, rhythm, 128, g);
+	}
+	else if (editMode == 2)
+	{
+		standardValueEditor(OFFSET, x, y, width, height, rhythm, 1024, g);
 	}
 	else if (editMode == 0)
 	{
@@ -293,12 +305,16 @@ void LondonClockTAudioProcessorEditor::paintEditMode(int x, int yPos, Graphics& 
 	// Buttons
 	bool isNoteEdit = editMode == 0;
 	bool isVelEdit  = editMode == 1;
+	bool isOffEdit  = editMode == 2;
 
 	if (drawButton(NULL, &isNoteEdit, "NOTE", x, (int)(y + height + 4), 40, 16, g, m.x, m.y, isMouseButtonDown(), isMouseClicked, isMousePressed))
 		editMode = 0;
 	
 	if (drawButton(NULL, &isVelEdit, "VEL", x + 42, (int)(y + height + 4), 40, 16, g, m.x, m.y, isMouseButtonDown(), isMouseClicked, isMousePressed))
 		editMode = 1;
+
+	if (drawButton(NULL, &isOffEdit, "OFFS", x + 42 * 2, (int)(y + height + 4), 40, 16, g, m.x, m.y, isMouseButtonDown(), isMouseClicked, isMousePressed))
+		editMode = 2;
 }
 
 void LondonClockTAudioProcessorEditor::resized()

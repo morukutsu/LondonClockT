@@ -126,6 +126,7 @@ Rhythm::Rhythm()
 		stepList[i].enabled = true;
 		stepList[i].cc = 60;
 		stepList[i].level = 127;
+		stepList[i].offset = 0; // 1024 values
 	}
 }
 
@@ -210,6 +211,34 @@ void Rhythm::sync()
 
 	unsigned int sequenceStartTimestamp = time - progress;
 	nextSampleTimestamp = (unsigned int)(sequenceStartTimestamp + nextStep * roundedLoopTime);
+}
+
+void Rhythm::stepValueSetter(StepValueType type, int index, int value)
+{
+	switch (type)
+	{
+		case LEVEL:
+			stepList[index].level = value;
+			break;
+
+		case OFFSET:
+			stepList[index].offset = value;
+			break;
+	}
+}
+
+int Rhythm::stepValueGetter(StepValueType type, int index)
+{
+	switch (type)
+	{
+		case LEVEL:
+			return stepList[index].level;
+			break;
+
+		case OFFSET:
+			return stepList[index].offset;
+			break;
+	}
 }
 
 void Rhythm::serialize(MemoryOutputStream& stream)

@@ -21,6 +21,8 @@ public:
 	int  paintChannelStatus(int x, int y, Graphics& g, Rhythm& rhythm, int index);
 	void paintRhythm(int x, int y, Graphics& g, Rhythm& rhythm, int index);
 	void paintEditMode(int x, int y, Graphics& g, Rhythm& rhythm, int index);
+	void standardValueEditor(StepValueType type, float x, float y, float width, float height,
+		Rhythm& rhythm, int maxValue, Graphics& g);
 
 	void mouseDown(const MouseEvent &event) override;
 	void mouseUp(const MouseEvent &event) override;
