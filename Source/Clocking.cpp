@@ -178,12 +178,20 @@ void Rhythm::tick(unsigned int currentSample, unsigned int timer, MidiBuffer& mi
 	{
 		if (stepList[stepId].enabled)
 		{
-			midi.addEvent(MidiMessage::noteOn(1, stepList[stepId].cc, (uint8)stepList[stepId].level), currentSample);
-			noteOffs.push_back({ (unsigned int)stepList[stepId].cc, nextSampleTimestamp + loopTime / 4 });
+			midi.addEvent(MidiMessage::noteOn(1, stepList[stepId].cc, (uint8)stepList[stepId].level), 
+				currentSample);
+
+			unsigned int noteOffTimestamp = nextSampleTimestamp + loopTime / 4;
+			//noteOffTimestamp += stepList[stepId].offset;
+
+			noteOffs.push_back({ (unsigned int)stepList[stepId].cc, noteOffTimestamp });
+
+			// TODO: set to nextSampleTimestamp + loopTime - 1
+			// clear note offs when the transport is stopped
+			// send all outstanding note off
 		}
 
 		double roundedLoopTime = floor(loopTimeSecs * ((double)divisor / steps));
-
 		nextSampleTimestamp = (unsigned int)(timer + roundedLoopTime);
 		nextStep = (nextStep + 1) % steps;
 	}
@@ -211,6 +219,10 @@ void Rhythm::sync()
 
 	unsigned int sequenceStartTimestamp = time - progress;
 	nextSampleTimestamp = (unsigned int)(sequenceStartTimestamp + nextStep * roundedLoopTime);
+
+	// Add step offset
+	/*int stepId = nextStep % steps;
+	nextSampleTimestamp += stepList[stepId].offset;*/
 }
 
 void Rhythm::stepValueSetter(StepValueType type, int index, int value)

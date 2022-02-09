@@ -2,13 +2,18 @@
 
 <JUCERPROJECT id="S2CYi6" name="LondonClockT" projectType="audioplug" version="1.0.0"
               bundleIdentifier="com.everything60.LondonClockT" includeBinaryInAppConfig="1"
-              buildVST="1" buildVST3="0" buildAU="1" buildAUv3="0" buildRTAS="0"
+              buildVST="0" buildVST3="1" buildAU="0" buildAUv3="0" buildRTAS="0"
               buildAAX="0" pluginName="LondonClockT" pluginDesc="LondonClockT"
               pluginManufacturer="Everything60" pluginManufacturerCode="E60V"
-              pluginCode="S2cy" pluginChannelConfigs="" pluginIsSynth="0" pluginWantsMidiIn="0"
+              pluginCode="S2cy" pluginChannelConfigs="" pluginIsSynth="0" pluginWantsMidiIn="1"
               pluginProducesMidiOut="1" pluginIsMidiEffectPlugin="1" pluginEditorRequiresKeys="0"
-              pluginAUExportPrefix="LondonClockTAU" pluginRTASCategory="" aaxIdentifier="com.everything60.LondonClockT"
-              pluginAAXCategory="AAX_ePlugInCategory_Dynamics" jucerVersion="4.3.1">
+              pluginAUExportPrefix="LondonClockTAU" pluginRTASCategory="0"
+              aaxIdentifier="com.everything60.LondonClockT" pluginAAXCategory="0"
+              pluginFormats="buildStandalone,buildVST3" pluginCharacteristicsValue="pluginIsMidiEffectPlugin,pluginProducesMidiOut,pluginWantsMidiIn"
+              jucerFormatVersion="1" buildStandalone="1" enableIAA="0" pluginRTASDisableBypass="0"
+              pluginRTASDisableMultiMono="0" pluginAAXDisableBypass="0" pluginAAXDisableMultiMono="0"
+              companyName="morukutsu" companyCopyright="morukutsu" displaySplashScreen="1"
+              defines="JUCE_VST3_CAN_REPLACE_VST2=0">
   <MAINGROUP id="ioAPFs" name="LondonClockT">
     <GROUP id="{4FF0AF9A-660C-5CC6-FBEF-EA2A71EE94A3}" name="Source">
       <GROUP id="{891D4DE2-F72C-A99F-E60B-404F12FEEE0C}" name="GUI">
@@ -27,30 +32,26 @@
     </GROUP>
   </MAINGROUP>
   <EXPORTFORMATS>
-    <VS2015 targetFolder="Builds/VisualStudio2015" vst3Folder="">
+    <VS2019 targetFolder="Builds/VisualStudio2019">
       <CONFIGURATIONS>
-        <CONFIGURATION name="Debug" winWarningLevel="4" generateManifest="1" winArchitecture="32-bit"
-                       isDebug="1" optimisation="1" targetName="LondonClockT"/>
-        <CONFIGURATION name="Release" winWarningLevel="4" generateManifest="1" winArchitecture="32-bit"
-                       isDebug="0" optimisation="3" targetName="LondonClockT"/>
+        <CONFIGURATION isDebug="1" name="Debug"/>
+        <CONFIGURATION isDebug="0" name="Release"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
-        <MODULEPATH id="juce_core" path="..\..\..\..\juce-grapefruit-windows\JUCE\modules"/>
-        <MODULEPATH id="juce_events" path="..\..\..\..\juce-grapefruit-windows\JUCE\modules"/>
-        <MODULEPATH id="juce_graphics" path="..\..\..\..\juce-grapefruit-windows\JUCE\modules"/>
-        <MODULEPATH id="juce_data_structures" path="..\..\..\..\juce-grapefruit-windows\JUCE\modules"/>
-        <MODULEPATH id="juce_gui_basics" path="..\..\..\..\juce-grapefruit-windows\JUCE\modules"/>
-        <MODULEPATH id="juce_gui_extra" path="..\..\..\..\juce-grapefruit-windows\JUCE\modules"/>
-        <MODULEPATH id="juce_cryptography" path="..\..\..\..\juce-grapefruit-windows\JUCE\modules"/>
-        <MODULEPATH id="juce_video" path="..\..\..\..\juce-grapefruit-windows\JUCE\modules"/>
-        <MODULEPATH id="juce_opengl" path="..\..\..\..\juce-grapefruit-windows\JUCE\modules"/>
-        <MODULEPATH id="juce_audio_basics" path="..\..\..\..\juce-grapefruit-windows\JUCE\modules"/>
-        <MODULEPATH id="juce_audio_devices" path="..\..\..\..\juce-grapefruit-windows\JUCE\modules"/>
-        <MODULEPATH id="juce_audio_formats" path="..\..\..\..\juce-grapefruit-windows\JUCE\modules"/>
-        <MODULEPATH id="juce_audio_processors" path="..\..\..\..\juce-grapefruit-windows\JUCE\modules"/>
-        <MODULEPATH id="juce_audio_plugin_client" path="..\..\..\..\juce-grapefruit-windows\JUCE\modules"/>
+        <MODULEPATH id="juce_gui_extra"/>
+        <MODULEPATH id="juce_gui_basics"/>
+        <MODULEPATH id="juce_graphics"/>
+        <MODULEPATH id="juce_events"/>
+        <MODULEPATH id="juce_data_structures"/>
+        <MODULEPATH id="juce_core"/>
+        <MODULEPATH id="juce_audio_processors"/>
+        <MODULEPATH id="juce_audio_plugin_client"/>
+        <MODULEPATH id="juce_audio_formats"/>
+        <MODULEPATH id="juce_audio_devices"/>
+        <MODULEPATH id="juce_audio_basics"/>
+        <MODULEPATH id="juce_audio_utils" path="../../../../../juce-6.1.2-windows/JUCE/modules"/>
       </MODULEPATHS>
-    </VS2015>
+    </VS2019>
   </EXPORTFORMATS>
   <MODULES>
     <MODULE id="juce_audio_basics" showAllCode="1" useLocalCopy="0"/>
@@ -58,15 +59,13 @@
     <MODULE id="juce_audio_formats" showAllCode="1" useLocalCopy="0"/>
     <MODULE id="juce_audio_plugin_client" showAllCode="1" useLocalCopy="0"/>
     <MODULE id="juce_audio_processors" showAllCode="1" useLocalCopy="0"/>
+    <MODULE id="juce_audio_utils" showAllCode="1" useLocalCopy="0" useGlobalPath="0"/>
     <MODULE id="juce_core" showAllCode="1" useLocalCopy="0"/>
-    <MODULE id="juce_cryptography" showAllCode="1" useLocalCopy="0"/>
     <MODULE id="juce_data_structures" showAllCode="1" useLocalCopy="0"/>
     <MODULE id="juce_events" showAllCode="1" useLocalCopy="0"/>
     <MODULE id="juce_graphics" showAllCode="1" useLocalCopy="0"/>
     <MODULE id="juce_gui_basics" showAllCode="1" useLocalCopy="0"/>
     <MODULE id="juce_gui_extra" showAllCode="1" useLocalCopy="0"/>
-    <MODULE id="juce_opengl" showAllCode="1" useLocalCopy="0"/>
-    <MODULE id="juce_video" showAllCode="1" useLocalCopy="0"/>
   </MODULES>
   <JUCEOPTIONS JUCE_QUICKTIME="disabled"/>
 </JUCERPROJECT>

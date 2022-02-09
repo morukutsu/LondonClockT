@@ -5,7 +5,7 @@
 //==============================================================================
 LondonClockTAudioProcessor::LondonClockTAudioProcessor()
 #ifndef JucePlugin_PreferredChannelConfigurations
-     : AudioProcessor (BusesProperties()
+     : AudioProcessor (BusesProperties().withOutput("Output", AudioChannelSet::stereo(), true)
                      #if ! JucePlugin_IsMidiEffect
                       #if ! JucePlugin_IsSynth
                        .withInput  ("Input",  AudioChannelSet::stereo(), true)
