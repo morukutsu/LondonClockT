@@ -22,7 +22,7 @@ unsigned int ImHash(const void* data, int data_size, unsigned int seed)
 		{
 			unsigned int crc = i;
 			for (unsigned int j = 0; j < 8; j++)
-				crc = (crc >> 1) ^ (unsigned int(-int(crc & 1)) & polynomial);
+				crc = (crc >> 1) ^ (static_cast<unsigned int>(-int(crc & 1)) & polynomial);
 			crc32_lut[i] = crc;
 		}
 	}
